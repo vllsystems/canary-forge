@@ -15,11 +15,11 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "lua_api_image.h"
-#include "../gui.h"
-#include "../graphics.h"
-#include "../items.h"
+#include "ui/gui.h"
+#include "rendering/graphics.h"
+#include "game/items.h"
 #include <filesystem>
 #include <print>
 #include "lua_script_manager.h"

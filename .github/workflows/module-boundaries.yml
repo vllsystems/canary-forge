@@ -1,0 +1,8 @@
+name: Module Boundaries
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash scripts/check_module_boundaries.sh

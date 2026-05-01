@@ -117,68 +117,83 @@ endif()
 # === UNITY BUILD (compile time reducer) ===
 if(SPEED_UP_BUILD_UNITY)
 	set_target_properties(${PROJECT_NAME} PROPERTIES UNITY_BUILD ON)
-	set_source_files_properties(gl_renderer.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_source_files_properties(rendering/gl_renderer.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+	set_source_files_properties(util/mt_rand.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
 	log_option_enabled("Build unity for speed up compilation")
 else()
 	# === PRECOMPILED HEADER ===
-	target_precompile_headers(${PROJECT_NAME} PRIVATE main.h)
+	target_precompile_headers(${PROJECT_NAME} PRIVATE app/main.h)
 endif()
 
 
 target_sources(${PROJECT_NAME}
 	PRIVATE
-	about_window.cpp
-	action.cpp
-	actions_history_window.cpp
-	add_item_window.cpp
-	add_tileset_window.cpp
-	application.cpp
-	artprovider.cpp
-	basemap.cpp
-	bitmap_to_map_window.cpp
-	bitmap_to_map_converter.cpp
-	brush.cpp
-	brush_tables.cpp
-	browse_tile_window.cpp
-	positionctrl.cpp
-	carpet_brush.cpp
+	ui/dialogs/about_window.cpp
+	editor/action.cpp
+	ui/windows/actions_history_window.cpp
+	ui/windows/add_item_window.cpp
+	ui/windows/add_tileset_window.cpp
+	app/application.cpp
+	app/artprovider.cpp
+	map/basemap.cpp
+	ui/windows/bitmap_to_map_window.cpp
+	io/bitmap_to_map/bitmap_to_map_converter.cpp
+	brushes/brush.cpp
+	brushes/brush_tables.cpp
+	ui/windows/browse_tile_window.cpp
+	ui/positionctrl.cpp
+	brushes/carpet_brush.cpp
 	client_assets.cpp
-	common.cpp
-	common_windows.cpp
-	complexitem.cpp
-	container_properties_window.cpp
-	copybuffer.cpp
-	monster_brush.cpp
-	monster.cpp
-	monsters.cpp
-	dat_debug_view.cpp
-	dcbutton.cpp
-	doodad_brush.cpp
-	editor.cpp
-	editor_tabs.cpp
-	eraser_brush.cpp
-	find_item_window.cpp
-	filehandle.cpp
-	graphics.cpp
-	gl_renderer.cpp
-	ground_brush.cpp
-	gui.cpp
-	house_brush.cpp
-	house.cpp
-	house_exit_brush.cpp
-	light_drawer.cpp
-	iomap.cpp
-	iomap_otbm.cpp
-	iominimap.cpp
-	item_attributes.cpp
-	item.cpp
-	items.cpp
-	live_action.cpp
-	live_client.cpp
-	live_peer.cpp
-	live_server.cpp
-	live_socket.cpp
-	live_tab.cpp
+	util/common.cpp
+	ui/dialogs/common_windows.cpp
+	game/complexitem.cpp
+	ui/dialogs/container_properties_window.cpp
+	editor/copybuffer.cpp
+	brushes/monster_brush.cpp
+	game/monster.cpp
+	game/monsters.cpp
+	ui/windows/dat_debug_view.cpp
+	ui/dcbutton.cpp
+	brushes/doodad_brush.cpp
+	editor/editor.cpp
+	editor/editor_save.cpp
+	editor/editor_import.cpp
+	editor/editor_selection_ops.cpp
+	editor/editor_draw.cpp
+	editor/editor_tabs.cpp
+	brushes/eraser_brush.cpp
+	ui/windows/find_item_window.cpp
+	io/filehandle.cpp
+	rendering/graphics.cpp
+	rendering/gl_renderer.cpp
+	brushes/ground_brush.cpp
+	ui/gui.cpp
+	ui/gui_loading.cpp
+	ui/gui_brush_state.cpp
+	ui/gui_file_ops.cpp
+	ui/gui_palette.cpp
+	editor/hotkey.cpp
+	editor/hotkey_manager.cpp
+	brushes/house_brush.cpp
+	game/house.cpp
+	brushes/house_exit_brush.cpp
+	rendering/light_drawer.cpp
+	io/iomap.cpp
+	io/otbm/iomap_otbm.cpp
+	io/otbm/otbm_item_serialization.cpp
+	io/xml/otbm_spawns.cpp
+	io/xml/otbm_houses.cpp
+	io/xml/otbm_zones.cpp
+	io/iominimap.cpp
+	game/item_attributes.cpp
+	game/item.cpp
+	game/items.cpp
+	live/live_action.cpp
+	live/live_client.cpp
+	live/live_peer.cpp
+	live/live_server.cpp
+	live/live_socket.cpp
+	live/live_tab.cpp
 	lua/lua_engine.cpp
 	lua/lua_script.cpp
 	lua/lua_script_manager.cpp
@@ -200,64 +215,77 @@ target_sources(${PROJECT_NAME}
 	lua/lua_api_json.cpp
 	lua/lua_api_algo.cpp
 	lua/lua_scripts_window.cpp
-	main_menubar.cpp
-	main_toolbar.cpp
-	map.cpp
-	map_display.cpp
-	map_drawer.cpp
-	map_region.cpp
-	map_tab.cpp
-	map_window.cpp
-	materials.cpp
-	minimap_window.cpp
-	mkpch.cpp
-	mt_rand.cpp
-	net_connection.cpp
-	npc.cpp
-	npc_brush.cpp
-	npcs.cpp
-	numbertextctrl.cpp
-	old_properties_window.cpp
-	palette_brushlist.cpp
-	palette_common.cpp
-	palette_monster.cpp
-	palette_house.cpp
-	palette_npc.cpp
-	palette_waypoints.cpp
-	palette_zones.cpp
-	palette_window.cpp
-	pngfiles.cpp
-	preferences.cpp
-	process_com.cpp
-	properties_window.cpp
-	raw_brush.cpp
-	replace_items_window.cpp
-	result_window.cpp
-	rme_net.cpp
-	selection.cpp
-	settings.cpp
-	spawn_monster_brush.cpp
-	spawn_monster.cpp
-	spawn_npc.cpp
-	spawn_npc_brush.cpp
-	sprite_appearances.cpp
-	stb_truetype_impl.cpp
-	table_brush.cpp
-	templatemap76-74.cpp
-	templatemap81.cpp
-	templatemap854.cpp
-	templatemapclassic.cpp
-	tile.cpp
-	tileset.cpp
-	tileset_window.cpp
-	town.cpp
-	updater.cpp
-	wall_brush.cpp
-	waypoint_brush.cpp
-	waypoints.cpp
-	welcome_dialog.cpp
-	zone_brush.cpp
-	zones.cpp
+	ui/menubar/main_menubar.cpp
+	ui/menubar/file_menu_handlers.cpp
+	ui/menubar/edit_menu_handlers.cpp
+	ui/menubar/map_menu_handlers.cpp
+	ui/menubar/view_menu_handlers.cpp
+	ui/menubar/window_menu_handlers.cpp
+	ui/menubar/menu_search_handlers.cpp
+	ui/toolbar/main_toolbar.cpp
+	map/map.cpp
+	rendering/map_display.cpp
+	rendering/canvas_mouse_handlers.cpp
+	rendering/canvas_keyboard_handlers.cpp
+	rendering/canvas_context_menu.cpp
+	rendering/map_drawer.cpp
+	rendering/draw_brush.cpp
+	rendering/draw_tile_detail.cpp
+	rendering/draw_tooltips.cpp
+	map/map_region.cpp
+	ui/map_tab.cpp
+	rendering/map_window.cpp
+	game/materials.cpp
+	ui/windows/minimap_window.cpp
+	util/mkpch.cpp
+	util/mt_rand.cpp
+	net/net_connection.cpp
+	game/npc.cpp
+	brushes/npc_brush.cpp
+	game/npcs.cpp
+	ui/numbertextctrl.cpp
+	ui/dialogs/old_properties_window.cpp
+	ui/palette/palette_brushlist.cpp
+	ui/palette/palette_common.cpp
+	ui/palette/palette_monster.cpp
+	ui/palette/palette_house.cpp
+	ui/palette/palette_npc.cpp
+	ui/palette/palette_waypoints.cpp
+	ui/palette/palette_zones.cpp
+	ui/palette/palette_window.cpp
+	io/pngfiles.cpp
+	ui/dialogs/preferences.cpp
+	app/process_com.cpp
+	ui/dialogs/properties_window.cpp
+	brushes/raw_brush.cpp
+	ui/windows/replace_items_window.cpp
+	ui/windows/result_window.cpp
+	net/rme_net.cpp
+	editor/selection.cpp
+	app/settings.cpp
+	brushes/spawn_monster_brush.cpp
+	game/spawn_monster.cpp
+	game/spawn_npc.cpp
+	brushes/spawn_npc_brush.cpp
+	rendering/sprite_appearances.cpp
+	util/stb_truetype_impl.cpp
+	brushes/table_brush.cpp
+	templates/templatemap76-74.cpp
+	templates/templatemap81.cpp
+	templates/templatemap854.cpp
+	templates/templatemapclassic.cpp
+	map/tile.cpp
+	map/tile_operations.cpp
+	game/tileset.cpp
+	ui/windows/tileset_window.cpp
+	game/town.cpp
+	app/updater.cpp
+	brushes/wall_brush.cpp
+	brushes/waypoint_brush.cpp
+	game/waypoints.cpp
+	ui/windows/welcome_dialog.cpp
+	brushes/zone_brush.cpp
+	game/zones.cpp
 )
 
 target_include_directories(${PROJECT_NAME}

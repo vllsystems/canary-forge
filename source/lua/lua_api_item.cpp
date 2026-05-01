@@ -15,10 +15,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "lua_api_item.h"
-#include "../item.h"
-#include "../items.h"
+#include "game/item.h"
+#include "game/items.h"
 
 #include <algorithm>
 #include <cctype>

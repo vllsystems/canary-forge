@@ -15,14 +15,14 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "lua_api_map.h"
-#include "../map.h"
-#include "../basemap.h"
-#include "../tile.h"
-#include "../position.h"
-#include "../gui.h"
-#include "../editor.h"
+#include "map/map.h"
+#include "map/basemap.h"
+#include "map/tile.h"
+#include "util/position.h"
+#include "ui/gui.h"
+#include "editor/editor.h"
 
 namespace LuaAPI {
 

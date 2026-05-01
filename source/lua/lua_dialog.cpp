@@ -15,18 +15,19 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
+#include "editor/hotkey_manager.h"
 #include "lua_dialog.h"
 #include "lua_api_image.h"
-#include "../gui.h"
-#include "../items.h"
-#include "../map_display.h"
-#include "../map_drawer.h"
-#include "../editor.h"
+#include "ui/gui.h"
+#include "game/items.h"
+#include "rendering/map_display.h"
+#include "rendering/map_drawer.h"
+#include "editor/editor.h"
 #include <wx/msgdlg.h>
-#include "../common_windows.h"
-#include "../find_item_window.h"
-#include "../dcbutton.h"
+#include "ui/dialogs/common_windows.h"
+#include "ui/windows/find_item_window.h"
+#include "ui/dcbutton.h"
 #include <wx/statline.h>
 #include <wx/valgen.h>
 #include <wx/aui/aui.h>
@@ -2936,8 +2937,8 @@ void LuaDialog::applyCommonOptions(wxWindow* widget, sol::table options) {
 
 void LuaDialog::suspendHotkeys() {
 	if (hotkeySuspendCount == 0) {
-		if (g_gui.AreHotkeysEnabled()) {
-			g_gui.DisableHotkeys();
+		if (g_hotkeys.AreHotkeysEnabled()) {
+			g_hotkeys.DisableHotkeys();
 			hotkeysDisabledByDialog = true;
 		}
 	}
@@ -2951,7 +2952,7 @@ void LuaDialog::resumeHotkeys() {
 	}
 	--hotkeySuspendCount;
 	if (hotkeySuspendCount == 0 && hotkeysDisabledByDialog) {
-		g_gui.EnableHotkeys();
+		g_hotkeys.EnableHotkeys();
 		hotkeysDisabledByDialog = false;
 	}
 }

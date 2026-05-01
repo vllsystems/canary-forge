@@ -15,16 +15,16 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "lua_api_creature.h"
 #include "lua_api.h"
-#include "../monster.h"
-#include "../monsters.h"
-#include "../spawn_monster.h"
-#include "../tile.h"
-#include "../map.h"
-#include "../editor.h"
-#include "../gui.h"
+#include "game/monster.h"
+#include "game/monsters.h"
+#include "game/spawn_monster.h"
+#include "map/tile.h"
+#include "map/map.h"
+#include "editor/editor.h"
+#include "ui/gui.h"
 
 namespace LuaAPI {
 

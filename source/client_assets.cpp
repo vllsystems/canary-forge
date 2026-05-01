@@ -15,16 +15,17 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
+#include <nlohmann/json.hpp>
 
 #include "client_assets.h"
 
-#include "settings.h"
-#include "filehandle.h"
-#include "preferences.h"
-#include "sprite_appearances.h"
-#include "gui.h"
-#include "otml.h"
+#include "app/settings.h"
+#include "io/filehandle.h"
+#include "ui/dialogs/preferences.h"
+#include "rendering/sprite_appearances.h"
+#include "ui/gui.h"
+#include "util/otml.h"
 
 #include <appearances.pb.h>
 

@@ -29,7 +29,7 @@
 #include <functional>
 #include <tuple>
 
-#include "../map_overlay.h"
+#include "map/map_overlay.h"
 #include "lua_overlay_manager.h"
 
 class Tile;

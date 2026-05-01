@@ -1,4 +1,5 @@
-#include "main.h"
+#include "app/main.h"
+#include <nlohmann/json.hpp>
 #include "lua_api_json.h"
 #include <nlohmann/json.hpp>
 

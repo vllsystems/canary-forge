@@ -18,7 +18,7 @@
 #ifndef RME_CLIENT_VERSION_H_
 #define RME_CLIENT_VERSION_H_
 
-#include "settings.h"
+#include "app/settings.h"
 
 // OTBM versions
 enum MapVersionID {

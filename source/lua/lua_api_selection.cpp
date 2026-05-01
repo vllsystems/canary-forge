@@ -15,13 +15,13 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "lua_api_selection.h"
-#include "../selection.h"
-#include "../tile.h"
-#include "../position.h"
-#include "../gui.h"
-#include "../editor.h"
+#include "editor/selection.h"
+#include "map/tile.h"
+#include "util/position.h"
+#include "ui/gui.h"
+#include "editor/editor.h"
 
 namespace LuaAPI {
 

@@ -15,12 +15,12 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "lua_script_manager.h"
 #include "lua_api.h"
 #include "lua_api_image.h"
-#include "../gui.h"
-#include "../tile.h"
+#include "ui/gui.h"
+#include "map/tile.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>

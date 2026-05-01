@@ -15,19 +15,20 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
+#include <wx/clipbrd.h>
 #include "lua_api_app.h"
 #include "lua_script_manager.h"
-#include "../gui.h"
-#include "../editor.h"
-#include "../map.h"
-#include "../brush.h"
-#include "../action.h"
-#include "../tile.h"
-#include "../selection.h"
-#include "../house.h"
-#include "../items.h"
-#include "../raw_brush.h"
+#include "ui/gui.h"
+#include "editor/editor.h"
+#include "map/map.h"
+#include "brushes/brush.h"
+#include "editor/action.h"
+#include "map/tile.h"
+#include "editor/selection.h"
+#include "game/house.h"
+#include "game/items.h"
+#include "brushes/raw_brush.h"
 
 #include <wx/msgdlg.h>
 #include <wx/app.h>

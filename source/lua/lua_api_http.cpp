@@ -15,7 +15,8 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
+#include <nlohmann/json.hpp>
 #include "lua_api_http.h"
 
 #include <cpr/cpr.h>

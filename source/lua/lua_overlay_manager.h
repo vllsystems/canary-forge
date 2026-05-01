@@ -2,7 +2,7 @@
 #define RME_LUA_OVERLAY_MANAGER_H
 
 #include "lua_engine.h"
-#include "../map_overlay.h"
+#include "map/map_overlay.h"
 #include <string>
 #include <string_view>
 #include <vector>

@@ -1,32 +1,43 @@
-What is this?
-=============
+# Canary's Map Editor
 
-This is a map editor for OpenTibia, which is an open source implementation of the MMORPG Tibia (which can be found at [tibia.com](http://tibia.com)).
-You can find the project for hosting your own server at [Canary](https://github.com/opentibiabr/canary).
+[![Build - Ubuntu](https://github.com/opentibiabr/remeres-map-editor/actions/workflows/build-ubuntu.yml/badge.svg)](https://github.com/opentibiabr/remeres-map-editor/actions/workflows/build-ubuntu.yml)
+[![Build - Windows - CMake](https://github.com/opentibiabr/remeres-map-editor/actions/workflows/build-windows-cmake.yml/badge.svg)](https://github.com/opentibiabr/remeres-map-editor/actions/workflows/build-windows-cmake.yml)
+[![Discord Channel](https://img.shields.io/discord/528117503952551936.svg?style=flat-square&logo=discord)](https://discord.gg/gvTj5sh9Mp)
+![GitHub repo size](https://img.shields.io/github/repo-size/opentibiabr/remeres-map-editor)
 
-Getting Started
-=========
-* [Gitbook](https://docs.opentibiabr.com/opentibiabr/projects/remeres-map-editor).
-* [Wiki](https://github.com/opentibiabr/remeres-map-editor/wiki).
+> A free and open-source map editor for [OpenTibia](https://github.com/opentibiabr/canary) — an open-source implementation of the MMORPG [Tibia](http://tibia.com).
 
-I want to contribute
-====================
+---
 
-Contributions are very welcome, if you would like to make any changes, fork this project and create a pull request in our [pull request tracker](https://github.com/opentibiabr/remeres-map-editor/pulls).
+## 📦 Download
 
-Bugs
-======
+Get the latest release at [Canary's Map Editor Releases](https://github.com/opentibiabr/remeres-map-editor/releases).
 
-Have you found a bug? Please create an issue in our [bug tracker](https://github.com/opentibiabr/remeres-map-editor/issues).
+---
 
-Other Applications
-==========
+## 📚 Documentation
 
-* To host your MMORPG game server, you can use [Canary](https://github.com/opentibiabr/canary).
-* To play your MMORPG game, you can use [OTClient](https://github.com/mehah/otclient).
-* To map your MMORPG game, you can use this map editor.
+- [Gitbook](https://docs.opentibiabr.com/opentibiabr/projects/remeres-map-editor)
+- [Wiki](https://github.com/opentibiabr/remeres-map-editor/wiki)
 
-Download
-========
+---
 
-You can find the releases in [opentibiabr remere's map editor](https://github.com/opentibiabr/remeres-map-editor/releases).
+## 🤝 Contributing
+
+Contributions are very welcome! Fork this project and open a pull request in our [pull request tracker](https://github.com/opentibiabr/remeres-map-editor/pulls).
+
+---
+
+## 🐛 Bugs
+
+Found a bug? Please open an issue in our [bug tracker](https://github.com/opentibiabr/remeres-map-editor/issues).
+
+---
+
+## 🔗 Related Projects
+
+| Project | Description |
+|---|---|
+| [Canary](https://github.com/opentibiabr/canary) | Game server — host your own MMORPG |
+| [OTClient](https://github.com/mehah/otclient) | Game client — play your MMORPG |
+| Canary's Map Editor | Map editor — build your world |

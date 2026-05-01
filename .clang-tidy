@@ -1,0 +1,24 @@
+---
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-narrowing-conversions,
+  misc-include-cleaner,
+  readability-function-size,
+  readability-identifier-naming,
+  performance-unnecessary-copy-initialization,
+  performance-unnecessary-value-param,
+  modernize-use-override,
+  modernize-use-nullptr, 
+  modernize-use-auto
+
+CheckOptions:
+  - key: readability-function-size.LineThreshold
+    value: 50
+  - key: readability-function-size.StatementThreshold
+    value: 50
+
+WarningsAsErrors: ''
+
+HeaderFilterRegex: 'source/.*\.h$'

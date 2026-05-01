@@ -15,10 +15,10 @@
 // along with this program. If not, see <http://www.gnu.org/licenses/>.
 //////////////////////////////////////////////////////////////////////
 
-#include "main.h"
+#include "app/main.h"
 #include "lua_api_brush.h"
-#include "../brush.h"
-#include "../gui.h"
+#include "brushes/brush.h"
+#include "ui/gui.h"
 
 namespace LuaAPI {
 

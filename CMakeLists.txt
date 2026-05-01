@@ -143,3 +143,11 @@ endif()
 # *****************************************************************************
 add_subdirectory(source/protobuf)
 add_subdirectory(source)
+  
+# *****************************************************************************  
+# Tests  
+# *****************************************************************************  
+option(BUILD_TESTS "Build unit tests" OFF)  
+if(BUILD_TESTS)  
+    add_subdirectory(tests)  
+endif()
