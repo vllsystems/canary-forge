@@ -811,7 +811,7 @@ void GLRenderer::flushCommands() {
 		current_texture = cmd.state.textureId;
 
 		// Processes command vertices in slices that fit into the buffer
-		const auto& verts = cmd.vertices;
+		const auto &verts = cmd.vertices;
 		size_t vertStep = cmd.isQuadBatch ? 4 : 3;
 		size_t idxPerStep = cmd.isQuadBatch ? 6 : 3;
 		size_t i = 0;
