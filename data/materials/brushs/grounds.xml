@@ -3727,6 +3727,21 @@
 
 		<border align="outer" id="248"/>
 	</brush>
-	
+	<brush name="river" type="ground" lookid="21302" z-order="7600">
+		<item id="21302" chance="3"/>
+		<item id="21303" chance="3"/>
+		<item id="21304" chance="3"/>
+		<item id="21305" chance="3"/>
+		<item id="21306" chance="3"/>
+		<item id="21307" chance="3"/>
+		<item id="21311" chance="1"/>
+		<item id="21312" chance="1"/>
+		<item id="21313" chance="1"/>
+		<item id="21314" chance="1"/>
+		<item id="21315" chance="1"/>
+		<border align="outer" id="5"/>
+		<border align="outer" to="none" id="5"/>
+		<border align="inner" to="ice" id="48"/>
+	</brush>	
 	
 </materials>
