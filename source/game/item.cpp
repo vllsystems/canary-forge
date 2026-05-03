@@ -532,7 +532,7 @@ std::string Item::LiquidID2Name(uint8_t id) {
 		case LIQUID_CHOCOLATE:
 			return "Chocolate";
 		case LIQUID_FRESHWATER:
-			return "Fresh Water";			
+			return "Fresh Water";
 		default:
 			return "Unknown";
 	}
@@ -605,7 +605,7 @@ uint8_t Item::LiquidName2ID(std::string liquid) {
 	}
 	if (liquid == "fresh water") {
 		return LIQUID_FRESHWATER;
-	}	
+	}
 	return LIQUID_NONE;
 }
 
