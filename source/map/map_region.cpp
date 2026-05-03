@@ -74,6 +74,8 @@ Floor::Floor(int sx, int sy, int z) {
 
 QTreeNode::QTreeNode(BaseMap &map) :
 	map(map),
+	parent(nullptr),
+	subtreeTileCount(0),
 	visible(0),
 	isLeaf(false) {
 	// Doesn't matter if we're leaf or node
@@ -130,10 +132,12 @@ QTreeNode* QTreeNode::getLeafForce(int x, int y) {
 		} else {
 			if (level == 0) {
 				qt = newd QTreeNode(map);
+				qt->parent = node;
 				qt->isLeaf = true;
 				return qt;
 			} else {
 				qt = newd QTreeNode(map);
+				qt->parent = node;
 			}
 		}
 		node = node->child[index];
@@ -143,6 +147,16 @@ QTreeNode* QTreeNode::getLeafForce(int x, int y) {
 	}
 
 	return nullptr;
+}
+
+void QTreeNode::addTileCountDelta(int delta) noexcept {
+	for (QTreeNode* node = this; node; node = node->parent) {
+		if (delta > 0) {
+			node->subtreeTileCount += static_cast<uint32_t>(delta);
+		} else {
+			node->subtreeTileCount -= static_cast<uint32_t>(-delta);
+		}
+	}
 }
 
 Floor* QTreeNode::createFloor(int x, int y, int z) {
@@ -245,8 +259,10 @@ Tile* QTreeNode::setTile(int x, int y, int z, Tile* newtile) {
 
 	if (newtile && !oldtile) {
 		++map.tilecount;
+		addTileCountDelta(1);
 	} else if (oldtile && !newtile) {
 		--map.tilecount;
+		addTileCountDelta(-1);
 	}
 
 	return oldtile;

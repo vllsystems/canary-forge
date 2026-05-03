@@ -16,6 +16,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include <cstddef>
+#include <memory_resource>
 #include <ranges>
 
 #include "brushes/brush.h"
@@ -31,6 +33,40 @@
 #include "brushes/table_brush.h"
 #include "game/npc.h"
 #include "game/spawn_npc.h"
+
+namespace {
+	struct alignas(std::max_align_t) TilePoolBlockHeader {
+		std::size_t size;
+	};
+
+	std::pmr::unsynchronized_pool_resource &tilePool() {
+		static std::pmr::unsynchronized_pool_resource pool;
+		return pool;
+	}
+}
+
+void* Tile::operator new(std::size_t size) {
+	const auto allocationSize = sizeof(TilePoolBlockHeader) + size;
+	auto* header = static_cast<TilePoolBlockHeader*>(tilePool().allocate(allocationSize, alignof(std::max_align_t)));
+	header->size = allocationSize;
+	return header + 1;
+}
+
+void Tile::operator delete(void* ptr) noexcept {
+	if (!ptr) {
+		return;
+	}
+	auto* header = static_cast<TilePoolBlockHeader*>(ptr) - 1;
+	tilePool().deallocate(header, header->size, alignof(std::max_align_t));
+}
+
+void* Tile::operator new(std::size_t size, const char*, int) {
+	return Tile::operator new(size);
+}
+
+void Tile::operator delete(void* ptr, const char*, int) noexcept {
+	Tile::operator delete(ptr);
+}
 
 const std::vector<Monster*> &Tile::getMonsters() const {
 	static const std::vector<Monster*> emptyMonsters;

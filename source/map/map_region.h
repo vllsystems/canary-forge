@@ -37,9 +37,9 @@ public:
 protected:
 	Tile* tile;
 	Position position;
-	size_t spawn_monster_count;
-	size_t spawn_npc_count;
-	size_t waypoint_count;
+	uint16_t spawn_monster_count;
+	uint16_t spawn_npc_count;
+	uint16_t waypoint_count;
 	HouseExitList* house_exits; // Any house exits pointing here
 
 public:
@@ -151,6 +151,8 @@ public:
 
 protected:
 	BaseMap &map;
+	QTreeNode* parent;
+	uint32_t subtreeTileCount;
 	uint32_t visible;
 
 	bool isLeaf;
@@ -165,6 +167,11 @@ protected:
 
 	friend class BaseMap;
 	friend class MapIterator;
+
+	bool hasTiles() const noexcept {
+		return subtreeTileCount != 0;
+	}
+	void addTileCountDelta(int delta) noexcept;
 };
 
 #endif
