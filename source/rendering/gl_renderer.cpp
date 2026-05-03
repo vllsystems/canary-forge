@@ -369,6 +369,10 @@ void GLRenderer::init() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, white.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	commandList.reserve(8192);
+	batch.reserve(STREAM_VBO_CAPACITY);
+	indexBatch.reserve(STREAM_EBO_CAPACITY);
+
 	initialized = true;
 }
 
@@ -493,12 +497,12 @@ void GLRenderer::drawTexturedQuad(float x, float y, float w, float h, GLuint tex
 	cmd.state.blendSrc = activeBlendSrc;
 	cmd.state.blendDst = activeBlendDst;
 	cmd.isQuadBatch = true;
-	cmd.vertices = {
+	cmd.quadVertices = std::array<Vertex, 4> { {
 		{ x, y, u0, v0_, color.r, color.g, color.b, color.a },
 		{ x + w, y, u1, v0_, color.r, color.g, color.b, color.a },
 		{ x + w, y + h, u1, v1_, color.r, color.g, color.b, color.a },
 		{ x, y + h, u0, v1_, color.r, color.g, color.b, color.a },
-	};
+	} };
 	commandList.push_back(std::move(cmd));
 }
 
@@ -508,12 +512,12 @@ void GLRenderer::drawColoredQuad(float x, float y, float w, float h, const GLCol
 	cmd.state.blendSrc = activeBlendSrc;
 	cmd.state.blendDst = activeBlendDst;
 	cmd.isQuadBatch = true;
-	cmd.vertices = {
+	cmd.quadVertices = std::array<Vertex, 4> { {
 		{ x, y, 0, 0, color.r, color.g, color.b, color.a },
 		{ x + w, y, 0, 0, color.r, color.g, color.b, color.a },
 		{ x + w, y + h, 0, 0, color.r, color.g, color.b, color.a },
 		{ x, y + h, 0, 0, color.r, color.g, color.b, color.a },
-	};
+	} };
 	commandList.push_back(std::move(cmd));
 }
 
@@ -532,12 +536,12 @@ void GLRenderer::drawThickLineSegment(float x1, float y1, float x2, float y2, fl
 	cmd.state.blendSrc = activeBlendSrc;
 	cmd.state.blendDst = activeBlendDst;
 	cmd.isQuadBatch = true;
-	cmd.vertices = {
+	cmd.quadVertices = std::array<Vertex, 4> { {
 		{ x1 + nx, y1 + ny, 0, 0, color.r, color.g, color.b, color.a },
 		{ x1 - nx, y1 - ny, 0, 0, color.r, color.g, color.b, color.a },
 		{ x2 - nx, y2 - ny, 0, 0, color.r, color.g, color.b, color.a },
 		{ x2 + nx, y2 + ny, 0, 0, color.r, color.g, color.b, color.a },
-	};
+	} };
 	commandList.push_back(std::move(cmd));
 }
 
@@ -750,12 +754,12 @@ void GLRenderer::drawBitmapChar(char c) {
 	cmd.state.blendSrc = activeBlendSrc;
 	cmd.state.blendDst = activeBlendDst;
 	cmd.isQuadBatch = true;
-	cmd.vertices = {
+	cmd.quadVertices = std::array<Vertex, 4> { {
 		{ qx, qy, g.u0, g.v0, font.textColor.r, font.textColor.g, font.textColor.b, font.textColor.a },
 		{ qx + qw, qy, g.u1, g.v0, font.textColor.r, font.textColor.g, font.textColor.b, font.textColor.a },
 		{ qx + qw, qy + qh, g.u1, g.v1, font.textColor.r, font.textColor.g, font.textColor.b, font.textColor.a },
 		{ qx, qy + qh, g.u0, g.v1, font.textColor.r, font.textColor.g, font.textColor.b, font.textColor.a },
-	};
+	} };
 	commandList.push_back(std::move(cmd));
 	font.cursorX += g.advance;
 }
@@ -771,9 +775,17 @@ void GLRenderer::mergeCommands() {
 	size_t write = 0;
 	for (size_t read = 1; read < commandList.size(); ++read) {
 		if (commandList[write].state == commandList[read].state && commandList[write].isQuadBatch == commandList[read].isQuadBatch) {
-			auto &src = commandList[read].vertices;
-			auto &dst = commandList[write].vertices;
-			dst.insert(dst.end(), src.begin(), src.end());
+			auto &dst = commandList[write];
+			auto &src = commandList[read];
+			if (dst.usesInlineQuad()) {
+				dst.vertices.reserve(8);
+				dst.vertices.insert(dst.vertices.end(), dst.quadVertices.begin(), dst.quadVertices.end());
+			}
+			if (src.usesInlineQuad()) {
+				dst.vertices.insert(dst.vertices.end(), src.quadVertices.begin(), src.quadVertices.end());
+			} else {
+				dst.vertices.insert(dst.vertices.end(), src.vertices.begin(), src.vertices.end());
+			}
 		} else {
 			++write;
 			if (write != read) {
@@ -811,13 +823,13 @@ void GLRenderer::flushCommands() {
 		current_texture = cmd.state.textureId;
 
 		// Processes command vertices in slices that fit into the buffer
-		const auto &verts = cmd.vertices;
 		size_t vertStep = cmd.isQuadBatch ? 4 : 3;
 		size_t idxPerStep = cmd.isQuadBatch ? 6 : 3;
 		size_t i = 0;
+		const size_t vertexCount = cmd.usesInlineQuad() ? cmd.quadVertices.size() : cmd.vertices.size();
 
-		while (i < verts.size()) {
-			size_t remaining = verts.size() - i;
+		while (i < vertexCount) {
+			size_t remaining = vertexCount - i;
 			size_t batchFree = STREAM_VBO_CAPACITY - batch.size();
 			// Number of vertices that still fit (rounded to a multiple of vertStep)
 			size_t canTake = (batchFree / vertStep) * vertStep;
@@ -831,7 +843,11 @@ void GLRenderer::flushCommands() {
 
 			if (cmd.isQuadBatch) {
 				auto base = (GLuint)batch.size();
-				batch.insert(batch.end(), verts.begin() + i, verts.begin() + i + take);
+				if (cmd.usesInlineQuad()) {
+					batch.insert(batch.end(), cmd.quadVertices.begin() + i, cmd.quadVertices.begin() + i + take);
+				} else {
+					batch.insert(batch.end(), cmd.vertices.begin() + i, cmd.vertices.begin() + i + take);
+				}
 				for (size_t q = 0; q < take; q += 4) {
 					GLuint b = base + (GLuint)q;
 					indexBatch.push_back(b);
@@ -843,7 +859,7 @@ void GLRenderer::flushCommands() {
 				}
 			} else {
 				auto base = (GLuint)batch.size();
-				batch.insert(batch.end(), verts.begin() + i, verts.begin() + i + take);
+				batch.insert(batch.end(), cmd.vertices.begin() + i, cmd.vertices.begin() + i + take);
 				for (GLuint j = 0; j < (GLuint)take; ++j) {
 					indexBatch.push_back(base + j);
 				}

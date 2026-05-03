@@ -78,13 +78,14 @@ void MonsterBrush::drawMonster(BaseMap* map, Tile* tile, void* parameter) {
 	ASSERT(parameter);
 	if (tile && canDraw(map, tile->getPosition())) {
 		if (monster_type) {
-			const auto it = std::ranges::find_if(tile->monsters, [&](const auto monster) {
+			const auto &tileMonsters = tile->getMonsters();
+			const auto it = std::ranges::find_if(tileMonsters, [&](const auto monster) {
 				return strcmp(monster->getTypeName().c_str(), monster_type->name.c_str()) == 0;
 			});
-			if (it == tile->monsters.end()) {
+			if (it == tileMonsters.end()) {
 				const auto monster = newd Monster(monster_type);
 				monster->setSpawnMonsterTime(*(uint16_t*)parameter);
-				tile->monsters.emplace_back(monster);
+				tile->addMonster(monster);
 			}
 		}
 	}

@@ -261,7 +261,7 @@ void ZonesPalettePanel::OnClickExportZone(wxCommandEvent &event) {
 		if (!tile || tile->size() == 0) {
 			continue;
 		}
-		for (const auto &zone_id : tile->zones) {
+		for (const auto &zone_id : tile->getZones()) {
 			zone_positions[zone_id].push_back(tile->getPosition());
 		}
 	}

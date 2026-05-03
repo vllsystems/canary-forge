@@ -32,6 +32,16 @@
 #include "game/npc.h"
 #include "game/spawn_npc.h"
 
+const std::vector<Monster*> &Tile::getMonsters() const {
+	static const std::vector<Monster*> emptyMonsters;
+	return monsters ? *monsters : emptyMonsters;
+}
+
+const std::set<unsigned int> &Tile::getZones() const {
+	static const std::set<unsigned int> emptyZones;
+	return zones ? *zones : emptyZones;
+}
+
 Tile::Tile(int x, int y, int z) :
 	location(nullptr),
 	ground(nullptr),
@@ -64,9 +74,9 @@ Tile::~Tile() {
 		items.pop_back();
 	}
 
-	while (!monsters.empty()) {
-		delete monsters.back();
-		monsters.pop_back();
+	while (monsters && !monsters->empty()) {
+		delete monsters->back();
+		monsters->pop_back();
 	}
 	// printf("%d,%d,%d,%p\n", tilePos.x, tilePos.y, tilePos.z, ground);
 	delete ground;
@@ -93,14 +103,14 @@ Tile* Tile::deepCopy(BaseMap &map) const {
 		copy->ground = ground->deepCopy();
 	}
 
-	for (const auto monster : monsters) {
-		copy->monsters.emplace_back(monster->deepCopy());
+	for (const auto monster : getMonsters()) {
+		copy->getOrCreateMonsters().emplace_back(monster->deepCopy());
 	}
 	for (const Item* item : items) {
 		copy->items.push_back(item->deepCopy());
 	}
-	for (unsigned int zone : zones) {
-		copy->zones.insert(zone);
+	for (unsigned int zone : getZones()) {
+		copy->addZone(zone);
 	}
 	return copy;
 }
@@ -126,7 +136,9 @@ int Tile::size() const {
 		++sz;
 	}
 	sz += items.size();
-	sz += monsters.size();
+	if (monsters) {
+		sz += monsters->size();
+	}
 	if (spawnMonster) {
 		++sz;
 	}
@@ -190,10 +202,10 @@ void Tile::merge(Tile* other) {
 		other->spawnNpc = nullptr;
 	}
 
-	for (const auto monster : other->monsters) {
+	for (const auto monster : other->getMonsters()) {
 		addMonster(monster);
 	}
-	other->monsters.clear();
+	other->monsters.reset();
 
 	for (Item* item : other->items) {
 		addItem(item);
@@ -280,7 +292,7 @@ void Tile::addMonster(Monster* monster) {
 		return;
 	}
 
-	monsters.emplace_back(monster);
+	getOrCreateMonsters().emplace_back(monster);
 
 	if (monster->isSelected()) {
 		statflags |= TILESTATE_SELECTED;
@@ -355,10 +367,13 @@ void Tile::replaceGround(Item* newGround) {
 }
 
 void Tile::clearMonsters() {
-	for (Monster* m : monsters) {
+	if (!monsters) {
+		return;
+	}
+	for (Monster* m : *monsters) {
 		delete m;
 	}
-	monsters.clear();
+	monsters.reset();
 }
 
 void Tile::clearSpawnMonster() {
@@ -383,7 +398,7 @@ void Tile::select() {
 		npc->select();
 	}
 
-	for (const auto monster : monsters) {
+	for (const auto monster : getMonsters()) {
 		monster->select();
 	}
 	for (Item* item : items) {
@@ -407,7 +422,7 @@ void Tile::deselect() {
 		npc->deselect();
 	}
 
-	for (const auto monster : monsters) {
+	for (const auto monster : getMonsters()) {
 		monster->deselect();
 	}
 
@@ -419,13 +434,16 @@ void Tile::deselect() {
 }
 
 Monster* Tile::getTopMonster() const {
-	return !monsters.empty() ? monsters.back() : nullptr;
+	return hasMonsters() ? monsters->back() : nullptr;
 }
 
 std::vector<Monster*> Tile::popSelectedMonsters() {
 	std::vector<Monster*> popMonsters;
+	if (!monsters) {
+		return popMonsters;
+	}
 
-	std::erase_if(monsters, [&](const auto monster) {
+	std::erase_if(*monsters, [&](const auto monster) {
 		if (monster->isSelected()) {
 			popMonsters.emplace_back(monster);
 			return true;
@@ -434,13 +452,16 @@ std::vector<Monster*> Tile::popSelectedMonsters() {
 		return false;
 	});
 
+	if (monsters->empty()) {
+		monsters.reset();
+	}
 	statflags &= ~TILESTATE_SELECTED;
 	return popMonsters;
 }
 
 std::vector<Monster*> Tile::getSelectedMonsters() {
 	std::vector<Monster*> selectedMonters;
-	std::copy_if(monsters.begin(), monsters.end(), std::back_inserter(selectedMonters), [](const auto monster) {
+	std::copy_if(getMonsters().begin(), getMonsters().end(), std::back_inserter(selectedMonters), [](const auto monster) {
 		return monster->isSelected();
 	});
 
@@ -448,10 +469,11 @@ std::vector<Monster*> Tile::getSelectedMonsters() {
 }
 
 bool Tile::isMonsterRepeated(const std::string &searchMonster) const {
-	return std::ranges::find_if(monsters, [&](const auto monster) {
+	const auto &tileMonsters = getMonsters();
+	return std::ranges::find_if(tileMonsters, [&](const auto monster) {
 			   return monster->getTypeName() == searchMonster;
 		   })
-		!= monsters.end();
+		!= tileMonsters.end();
 }
 
 Item* Tile::getTopSelectedItem() {
@@ -541,8 +563,8 @@ void Tile::update() {
 	if (spawnNpc && spawnNpc->isSelected()) {
 		statflags |= TILESTATE_SELECTED;
 	}
-	if (!monsters.empty()) {
-		for (const auto monster : monsters) {
+	if (monsters) {
+		for (const auto monster : *monsters) {
 			if (monster->isSelected()) {
 				statflags |= TILESTATE_SELECTED;
 				break;

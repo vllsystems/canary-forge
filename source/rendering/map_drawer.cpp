@@ -498,8 +498,8 @@ void MapDrawer::DrawSecondaryMap(int map_z) {
 			}
 
 			// Monsters
-			if (!hidden && options.show_monsters && !tile->monsters.empty()) {
-				for (auto monster : tile->monsters) {
+			if (!hidden && options.show_monsters && tile->hasMonsters()) {
+				for (auto monster : tile->getMonsters()) {
 					BlitCreature(draw_x, draw_y, monster);
 				}
 			}
@@ -633,8 +633,8 @@ void MapDrawer::DrawDraggingShadow() {
 				}
 			}
 
-			if (options.show_monsters && !tile->monsters.empty()) {
-				for (auto monster : tile->monsters) {
+			if (options.show_monsters && tile->hasMonsters()) {
+				for (auto monster : tile->getMonsters()) {
 					if (!monster->isSelected()) {
 						continue;
 					}
