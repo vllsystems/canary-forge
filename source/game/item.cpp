@@ -16,6 +16,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "app/main.h"
+#include <cstddef>
+#include <memory_resource>
 
 #include "brushes/brush.h"
 #include "rendering/graphics.h" // KNOWN_VIOLATION
@@ -29,6 +31,48 @@
 #include "brushes/carpet_brush.h"
 #include "brushes/table_brush.h"
 #include "brushes/wall_brush.h"
+
+namespace {
+struct alignas(std::max_align_t) ItemPoolBlockHeader {
+	std::size_t size;
+};
+
+std::pmr::unsynchronized_pool_resource &itemPool() {
+	static std::pmr::unsynchronized_pool_resource pool;
+	return pool;
+}
+}
+
+void* Item::operator new(std::size_t size) {
+	const auto allocationSize = sizeof(ItemPoolBlockHeader) + size;
+	auto* header = static_cast<ItemPoolBlockHeader*>(itemPool().allocate(allocationSize, alignof(std::max_align_t)));
+	header->size = allocationSize;
+	return header + 1;
+}
+
+void Item::operator delete(void* ptr, std::size_t) noexcept {
+	Item::operator delete(ptr);
+}
+
+void Item::operator delete(void* ptr) noexcept {
+	if (!ptr) {
+		return;
+	}
+	auto* header = static_cast<ItemPoolBlockHeader*>(ptr) - 1;
+	itemPool().deallocate(header, header->size, alignof(std::max_align_t));
+}
+
+void* Item::operator new(std::size_t size, const char*, int) {
+	return Item::operator new(size);
+}
+
+void Item::operator delete(void* ptr, std::size_t size, const char*, int) noexcept {
+	Item::operator delete(ptr, size);
+}
+
+void Item::operator delete(void* ptr, const char*, int) noexcept {
+	Item::operator delete(ptr);
+}
 
 Item* Item::Create(uint16_t id, uint16_t subtype /*= 0xFFFF*/) {
 	if (id == 0) {

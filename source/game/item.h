@@ -22,6 +22,7 @@
 #include "io/otbm/iomap_otbm.h"
 // #include "io/iomap_otmm.h"
 #include "game/item_attributes.h"
+#include <cstddef>
 
 enum ITEMPROPERTY {
 	BLOCKSOLID,
@@ -77,6 +78,13 @@ struct SpriteLight;
 
 class Item : public ItemAttributes {
 public:
+	static void* operator new(std::size_t size);
+	static void operator delete(void* ptr, std::size_t size) noexcept;
+	static void operator delete(void* ptr) noexcept;
+	static void* operator new(std::size_t size, const char* file, int line);
+	static void operator delete(void* ptr, std::size_t size, const char* file, int line) noexcept;
+	static void operator delete(void* ptr, const char* file, int line) noexcept;
+
 	// Factory member to create item of right type based on type
 	static Item* Create(uint16_t id, uint16_t subtype = 0xFFFF);
 	static Item* Create(pugi::xml_node);

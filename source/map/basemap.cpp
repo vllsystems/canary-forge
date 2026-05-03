@@ -184,7 +184,7 @@ MapIterator BaseMap::begin() {
 		bool unwind = false;
 		for (; index < 16; ++index) {
 			// printf("\tChecking index %d of %p\n", index, node);
-			if (QTreeNode* child = node->child[index]) {
+			if (QTreeNode* child = node->child[index]; child && child->hasTiles()) {
 				if (child->isLeaf) {
 					QTreeNode* leaf = child;
 					// printf("\t%p is leaf\n", child);
@@ -251,7 +251,7 @@ MapIterator &MapIterator::operator++() {
 		bool unwind = false;
 		for (; index < rme::MapLayers; ++index) {
 			// printf("\tChecking index %d of %p\n", index, node);
-			if (QTreeNode* child = node->child[index]) {
+			if (QTreeNode* child = node->child[index]; child && child->hasTiles()) {
 				if (child->isLeaf) {
 					QTreeNode* leaf = child;
 					// printf("\t%p is leaf\n", child);
