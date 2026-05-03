@@ -144,7 +144,12 @@ BitmapToMapWindow::BitmapToMapWindow(wxWindow* parent, Editor &editor) :
 	scaleOptions.Add("0.5x");
 	scaleOptions.Add("1x");
 	scaleOptions.Add("2x");
+	scaleOptions.Add("3x");
 	scaleOptions.Add("4x");
+	scaleOptions.Add("5x");
+	scaleOptions.Add("6x");
+	scaleOptions.Add("7x");
+	scaleOptions.Add("8x");
 	scaleChoice = newd wxChoice(this, wxID_ANY, wxDefaultPosition, wxSize(80, -1), scaleOptions);
 	scaleChoice->SetSelection(2); // default 1x
 	scaleSizer->Add(scaleChoice, 0, wxALL, 2);
@@ -639,7 +644,7 @@ void BitmapToMapWindow::OnClickGenerate(wxCommandEvent &event) {
 	// Apply scale
 	wxImage imageToConvert = loadedImage.Copy();
 	int scaleIndex = scaleChoice->GetSelection();
-	constexpr std::array<double, 5> scaleFactors = { 0.25, 0.5, 1.0, 2.0, 4.0 };
+	constexpr std::array<double, 10> scaleFactors = { 0.25, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 };
 	if (scaleIndex >= 0 && scaleIndex < static_cast<int>(scaleFactors.size())) {
 		double factor = scaleFactors[scaleIndex];
 		if (factor != 1.0) {
