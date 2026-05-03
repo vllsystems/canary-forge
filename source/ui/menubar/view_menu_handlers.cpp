@@ -124,7 +124,7 @@ void MainMenuBar::OnChangeFloor(wxCommandEvent &event) {
 		return;
 	}
 
-	for (int i = 0; i < 16; ++i) {
+	for (int i = 0; i < rme::MapLayers; ++i) {
 		if (IsItemChecked(MenuBar::ActionID(MenuBar::FLOOR_0 + i))) {
 			g_gui.ChangeFloor(i);
 		}

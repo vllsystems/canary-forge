@@ -182,7 +182,7 @@ MapIterator BaseMap::begin() {
 		// printf("Contemplating %p of %p (stack size %d)\n", node, this, it.nodestack.size());
 
 		bool unwind = false;
-		for (; index < 16; ++index) {
+		for (; index < rme::MapLayers; ++index) {
 			// printf("\tChecking index %d of %p\n", index, node);
 			if (QTreeNode* child = node->child[index]; child && child->hasTiles()) {
 				if (child->isLeaf) {
@@ -190,7 +190,7 @@ MapIterator BaseMap::begin() {
 					// printf("\t%p is leaf\n", child);
 					for (it.local_z = 0; it.local_z < rme::MapLayers; ++it.local_z) {
 						if (Floor* floor = leaf->array[it.local_z]) {
-							for (it.local_i = 0; it.local_i < 16; ++it.local_i) {
+							for (it.local_i = 0; it.local_i < rme::MapLayers; ++it.local_i) {
 								// printf("\tit(%d;%d;%d)\n", it.local_x, it.local_y, it.local_z);
 								TileLocation &t = floor->locs[it.local_i];
 								if (t.get()) {

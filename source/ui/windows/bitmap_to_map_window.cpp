@@ -125,7 +125,7 @@ BitmapToMapWindow::BitmapToMapWindow(wxWindow* parent, Editor &editor) :
 	yOffsetCtrl = newd wxSpinCtrl(offsetBox->GetStaticBox(), wxID_ANY, "0", wxDefaultPosition, wxSize(70, -1), wxSP_ARROW_KEYS, 0, 65000, 0);
 	offsetBox->Add(yOffsetCtrl, 0, wxALL, 2);
 	offsetBox->Add(newd wxStaticText(offsetBox->GetStaticBox(), wxID_ANY, "Z:"), 0, wxALIGN_CENTER_VERTICAL | wxLEFT, 5);
-	zOffsetCtrl = newd wxSpinCtrl(offsetBox->GetStaticBox(), wxID_ANY, "7", wxDefaultPosition, wxSize(50, -1), wxSP_ARROW_KEYS, 0, 15, 7);
+	zOffsetCtrl = newd wxSpinCtrl(offsetBox->GetStaticBox(), wxID_ANY, "31", wxDefaultPosition, wxSize(50, -1), wxSP_ARROW_KEYS, 0, 63, 31);
 	offsetBox->Add(zOffsetCtrl, 0, wxALL, 2);
 	rightSizer->Add(offsetBox, 0, wxEXPAND | wxALL, 5);
 

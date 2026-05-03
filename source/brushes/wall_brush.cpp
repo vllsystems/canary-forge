@@ -326,7 +326,7 @@ void WallBrush::draw(BaseMap* map, Tile* tile, void* parameter) {
 			return;
 		}
 
-		for (int i = 0; i < 16; ++i) {
+		for (int i = 0; i < 32; ++i) {
 			WallNode &wn = try_brush->wall_items[i];
 			if (wn.total_chance <= 0) {
 				continue;

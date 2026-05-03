@@ -80,9 +80,9 @@ namespace OnMapRemoveUnreachable {
 			int ey = std::min(pos.y + 8, 65535);
 			int sz, ez;
 
-			if (pos.z < 8) {
+			if (pos.z < 32) {
 				sz = 0;
-				ez = 9;
+				ez = 33;
 			} else {
 				// underground
 				sz = std::max(pos.z - 2, rme::MapGroundLayer);

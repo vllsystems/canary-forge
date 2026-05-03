@@ -23,17 +23,17 @@ namespace rme {
 	constexpr double PI = 3.14159265;
 
 	// The height of the map (there should be more checks for this...)
-	constexpr int MapLayers = 16;
+	constexpr int MapLayers = 64;
 
 	constexpr int MapMinWidth = 256;
 	constexpr int MapMaxWidth = 65000;
 	constexpr int MapMinHeight = 256;
 	constexpr int MapMaxHeight = 65000;
 	constexpr int MapMinLayer = 0;
-	constexpr int MapMaxLayer = 15;
+	constexpr int MapMaxLayer = 63;
 
 	// The sea layer
-	constexpr int MapGroundLayer = 7;
+	constexpr int MapGroundLayer = 31;
 
 	constexpr int ClientMapWidth = 18;
 	constexpr int ClientMapHeight = 14;

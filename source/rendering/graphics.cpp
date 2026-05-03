@@ -509,7 +509,7 @@ bool GraphicManager::loadSpriteMetadata(const FileName &datafile, wxString &erro
 		has_frame_groups = dat_format >= DAT_FORMAT_11;
 	}
 
-	uint16_t id = minID;
+	int32_t id = minID;
 	// loop through all ItemDatabase until we reach the end of file
 	while (id <= maxID) {
 		GameSprite* sType = newd GameSprite();

@@ -179,7 +179,7 @@ bool QTreeNode::isRequested(bool underground) {
 	}
 }
 
-void QTreeNode::clearVisible(uint32_t u) {
+void QTreeNode::clearVisible(uint64_t u) {
 	if (isLeaf) {
 		visible &= u;
 	} else {
@@ -191,11 +191,11 @@ void QTreeNode::clearVisible(uint32_t u) {
 	}
 }
 
-bool QTreeNode::isVisible(uint32_t client, bool underground) {
+bool QTreeNode::isVisible(uint64_t client, bool underground) {
 	if (underground) {
-		return testFlags(visible >> rme::MapLayers, static_cast<uint64_t>(1) << client);
+		return testFlags(visible, static_cast<uint64_t>(1) << (64 + client));
 	} else {
-		return testFlags(visible, static_cast<uint64_t>(1) << client);
+		return testFlags(visible, static_cast<uint64_t>(1) << (64 + client));
 	}
 }
 
@@ -223,11 +223,13 @@ void QTreeNode::setRequested(bool underground, bool r) {
 	}
 }
 
-void QTreeNode::setVisible(uint32_t client, bool underground, bool value) {
+void QTreeNode::setVisible(uint64_t client, bool underground, bool value) {
 	if (value) {
-		visible |= (1 << client << (underground ? rme::MapLayers : 0));
-	} else {
-		visible &= ~(1 << client << (underground ? rme::MapLayers : 0));
+		if (underground) {
+			visible |= (static_cast<uint64_t>(1) << (64 + client));
+		} else {
+			visible |= (static_cast<uint64_t>(1) << client);
+		}
 	}
 }
 
