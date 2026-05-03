@@ -33,14 +33,14 @@
 #include "brushes/wall_brush.h"
 
 namespace {
-struct alignas(std::max_align_t) ItemPoolBlockHeader {
-	std::size_t size;
-};
+	struct alignas(std::max_align_t) ItemPoolBlockHeader {
+		std::size_t size;
+	};
 
-std::pmr::unsynchronized_pool_resource &itemPool() {
-	static std::pmr::unsynchronized_pool_resource pool;
-	return pool;
-}
+	std::pmr::unsynchronized_pool_resource &itemPool() {
+		static std::pmr::unsynchronized_pool_resource pool;
+		return pool;
+	}
 }
 
 void* Item::operator new(std::size_t size) {

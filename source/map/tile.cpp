@@ -35,14 +35,14 @@
 #include "game/spawn_npc.h"
 
 namespace {
-struct alignas(std::max_align_t) TilePoolBlockHeader {
-	std::size_t size;
-};
+	struct alignas(std::max_align_t) TilePoolBlockHeader {
+		std::size_t size;
+	};
 
-std::pmr::unsynchronized_pool_resource &tilePool() {
-	static std::pmr::unsynchronized_pool_resource pool;
-	return pool;
-}
+	std::pmr::unsynchronized_pool_resource &tilePool() {
+		static std::pmr::unsynchronized_pool_resource pool;
+		return pool;
+	}
 }
 
 void* Tile::operator new(std::size_t size) {
