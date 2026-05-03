@@ -100,7 +100,7 @@ Item* Item::Create(uint16_t id, uint16_t subtype /*= 0xFFFF*/) {
 		if (type.isFluidContainer()) {
 			return new Item(id, LIQUID_NONE);
 		} else if (type.isSplash()) {
-			return new Item(id, LIQUID_WATER);
+			return new Item(id, LIQUID_SALTWATER);
 		} else if (type.charges > 0) {
 			return new Item(id, type.charges);
 		} else {
@@ -452,7 +452,7 @@ void Item::animate() {
 
 uint8_t Item::liquidSubTypeToSpriteSubType(uint8_t id) {
 	switch (id) {
-		case LIQUID_WATER:
+		case LIQUID_SALTWATER:
 			return 1;
 		case LIQUID_BLOOD:
 		case LIQUID_LIFEFLUID:
@@ -491,8 +491,8 @@ std::string Item::LiquidID2Name(uint8_t id) {
 	switch (id) {
 		case LIQUID_NONE:
 			return "None";
-		case LIQUID_WATER:
-			return "Water";
+		case LIQUID_SALTWATER:
+			return "Salt Water";
 		case LIQUID_WINE:
 			return "Wine";
 		case LIQUID_BEER:
@@ -531,6 +531,8 @@ std::string Item::LiquidID2Name(uint8_t id) {
 			return "Candyfluid";
 		case LIQUID_CHOCOLATE:
 			return "Chocolate";
+		case LIQUID_FRESHWATER:
+			return "Fresh Water";			
 		default:
 			return "Unknown";
 	}
@@ -542,7 +544,7 @@ uint8_t Item::LiquidName2ID(std::string liquid) {
 		return LIQUID_NONE;
 	}
 	if (liquid == "water") {
-		return LIQUID_WATER;
+		return LIQUID_SALTWATER;
 	}
 	if (liquid == "wine") {
 		return LIQUID_WINE;
@@ -601,6 +603,9 @@ uint8_t Item::LiquidName2ID(std::string liquid) {
 	if (liquid == "chocolate") {
 		return LIQUID_CHOCOLATE;
 	}
+	if (liquid == "fresh water") {
+		return LIQUID_FRESHWATER;
+	}	
 	return LIQUID_NONE;
 }
 
