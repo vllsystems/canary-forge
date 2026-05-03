@@ -158,7 +158,7 @@ void MainMenuBar::OnMapRemoveEmptyMonsterSpawns(wxCommandEvent &WXUNUSED(event))
 				for (auto x = -radius; x <= radius; ++x) {
 					const auto creatureTile = map.getTile(spawnPosition + Position(x, y, 0));
 					if (creatureTile) {
-						for (const auto monster : creatureTile->monsters) {
+						for (const auto monster : creatureTile->getMonsters()) {
 							if (empty) {
 								empty = false;
 							}
@@ -459,7 +459,7 @@ void MainMenuBar::OnMapStatistics(wxCommandEvent &WXUNUSED(event)) {
 			spawn_npc_count += 1;
 		}
 
-		monster_count += tile->monsters.size();
+		monster_count += tile->getMonsters().size();
 
 		if (tile->npc) {
 			npc_count += 1;

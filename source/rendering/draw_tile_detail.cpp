@@ -479,7 +479,7 @@ void MapDrawer::DrawTile(TileLocation* location) {
 				r /= 1.5;
 				g /= 2;
 			}
-			if (showspecial && ((!tile->zones.empty() && !zone_active) || tile->zones.size() > 1)) {
+			if (showspecial && ((tile->hasZone() && !zone_active) || tile->getZones().size() > 1)) {
 				r /= 1.4;
 				g /= 1.6;
 				b /= 1.3;
@@ -527,8 +527,8 @@ void MapDrawer::DrawTile(TileLocation* location) {
 		}
 	}
 
-	if (!hidden && options.show_monsters && !tile->monsters.empty()) {
-		for (auto monster : tile->monsters) {
+	if (!hidden && options.show_monsters && tile->hasMonsters()) {
+		for (auto monster : tile->getMonsters()) {
 			BlitCreature(draw_x, draw_y, monster);
 		}
 	}

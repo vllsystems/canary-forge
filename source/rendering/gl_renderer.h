@@ -99,8 +99,13 @@ private:
 
 	struct DrawCommand {
 		DrawState state;
+		std::array<Vertex, 4> quadVertices {};
 		std::vector<Vertex> vertices;
 		bool isQuadBatch = true;
+
+		bool usesInlineQuad() const {
+			return isQuadBatch && vertices.empty();
+		}
 	};
 
 	std::vector<Vertex> batch;

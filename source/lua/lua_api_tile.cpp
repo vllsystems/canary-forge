@@ -143,14 +143,14 @@ namespace LuaAPI {
 			monster->setDirection(dir);
 		}
 
-		tile->monsters.emplace_back(monster);
+		tile->addMonster(monster);
 		tile->modify();
 		return monster;
 	}
 
 	// Remove creature from tile
 	static bool removeTileCreature(Tile* tile) {
-		if (!tile || tile->monsters.empty()) {
+		if (!tile || !tile->hasMonsters()) {
 			return false;
 		}
 		markTileForUndo(tile);
@@ -392,9 +392,9 @@ namespace LuaAPI {
 } },
 
 			// Creature and Spawn (read-only access, use methods to modify)
-			"creature", sol::property([](Tile* tile) -> Monster* { return (tile && !tile->monsters.empty()) ? tile->monsters.back() : nullptr; }),
+			"creature", sol::property([](Tile* tile) -> Monster* { return tile ? tile->getTopMonster() : nullptr; }),
 			"spawn", sol::property([](Tile* tile) -> SpawnMonster* { return tile ? tile->spawnMonster : nullptr; }),
-			"hasCreature", sol::property([](Tile* tile) { return tile && !tile->monsters.empty(); }),
+			"hasCreature", sol::property([](Tile* tile) { return tile && tile->hasMonsters(); }),
 			"hasSpawn", sol::property([](Tile* tile) { return tile && tile->spawnMonster != nullptr; }),
 
 			// Creature methods

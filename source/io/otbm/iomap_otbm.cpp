@@ -926,10 +926,10 @@ bool IOMapOTBM::saveMap(Map &map, NodeFileWriteHandle &f) {
 						item->serializeItemNode_OTBM(self, f);
 					}
 				}
-				if (!save_tile->zones.empty()) {
+				if (save_tile->hasZone()) {
 					f.addNode(OTBM_TILE_ZONE);
-					f.addU16(save_tile->zones.size());
-					for (const auto &zoneId : save_tile->zones) {
+					f.addU16(save_tile->getZones().size());
+					for (const auto &zoneId : save_tile->getZones()) {
 						f.addU16(zoneId);
 					}
 					f.endNode();

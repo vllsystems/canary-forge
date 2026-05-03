@@ -147,7 +147,7 @@ bool SpawnXmlSerializer::loadMonsters(Map &map, pugi::xml_document &doc, wxArray
 			monster->setDirection(direction);
 			monster->setSpawnMonsterTime(spawntime);
 			monster->setWeight(weight);
-			monsterTile->monsters.emplace_back(monster);
+			monsterTile->addMonster(monster);
 
 			if (monsterTile->getLocation()->getSpawnMonsterCount() == 0) {
 				// No monster spawn, create a newd one
@@ -351,7 +351,7 @@ bool SpawnXmlSerializer::saveMonsters(Map &map, pugi::xml_document &doc) {
 			for (auto x = -radius; x <= radius; ++x) {
 				const auto monsterTile = map.getTile(spawnPosition + Position(x, y, 0));
 				if (monsterTile) {
-					for (const auto monster : monsterTile->monsters) {
+					for (const auto monster : monsterTile->getMonsters()) {
 						if (monster && !monster->isSaved()) {
 							pugi::xml_node monsterNode = spawnNode.append_child("monster");
 							monsterNode.append_attribute("name") = monster->getName().c_str();
@@ -363,7 +363,7 @@ bool SpawnXmlSerializer::saveMonsters(Map &map, pugi::xml_document &doc) {
 								monsterNode.append_attribute("direction") = monster->getDirection();
 							}
 
-							if (monsterTile->monsters.size() > 1) {
+							if (monsterTile->getMonsters().size() > 1) {
 								const auto weight = monster->getWeight();
 								monsterNode.append_attribute("weight") = weight > 0 ? weight : g_settings.getInteger(Config::MONSTER_DEFAULT_WEIGHT);
 							}

@@ -23,6 +23,8 @@
 #include "map/map_region.h"
 #include "game/spawn_npc.h"
 #include "game/npc.h"
+#include <memory>
+#include <set>
 #include <unordered_set>
 
 enum {
@@ -52,12 +54,12 @@ public: // Members
 	TileLocation* location;
 	Item* ground;
 	ItemVector items;
-	std::vector<Monster*> monsters;
+	std::unique_ptr<std::vector<Monster*>> monsters;
 	SpawnMonster* spawnMonster;
 	Npc* npc;
 	SpawnNpc* spawnNpc;
 	uint32_t house_id; // House id for this tile (pointer not safe)
-	std::set<unsigned int> zones;
+	std::unique_ptr<std::set<unsigned int>> zones;
 
 public:
 	// ALWAYS use this constructor if the Tile is EVER going to be placed on a map
@@ -166,6 +168,16 @@ public: // Functions
 	void deselect();
 
 	void addMonster(Monster* monster);
+	bool hasMonsters() const noexcept {
+		return monsters && !monsters->empty();
+	}
+	std::vector<Monster*> &getOrCreateMonsters() {
+		if (!monsters) {
+			monsters = std::make_unique<std::vector<Monster*>>();
+		}
+		return *monsters;
+	}
+	const std::vector<Monster*> &getMonsters() const;
 	Monster* getTopMonster() const; // Returns the topmost monster, or nullptr
 	std::vector<Monster*> popSelectedMonsters();
 	std::vector<Monster*> getSelectedMonsters();
@@ -264,27 +276,37 @@ public: // Functions
 	uint16_t getStatFlags() const noexcept;
 
 	bool hasZone() const {
-		return !zones.empty();
+		return zones && !zones->empty();
 	}
 
 	bool hasZone(unsigned int zone) const {
-		return zones.find(zone) != zones.end();
+		return zones && zones->find(zone) != zones->end();
 	}
 
 	void addZone(unsigned int zone) {
 		if (zone == 0) {
 			return;
 		}
-		zones.insert(zone);
+		if (!zones) {
+			zones = std::make_unique<std::set<unsigned int>>();
+		}
+		zones->insert(zone);
 	}
 
 	void removeZone(unsigned int zone) {
-		zones.erase(zone);
+		if (zones) {
+			zones->erase(zone);
+			if (zones->empty()) {
+				zones.reset();
+			}
+		}
 	}
 
 	void removeZones() {
-		zones.clear();
+		zones.reset();
 	}
+
+	const std::set<unsigned int> &getZones() const;
 
 protected:
 	union {

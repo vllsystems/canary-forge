@@ -178,7 +178,7 @@ struct MapConversionContext {
 	NpcMap npcType;
 
 	void operator()(Map &map, Tile* tile, long long done) {
-		for (const auto monster : tile->monsters) {
+		for (const auto monster : tile->getMonsters()) {
 			const auto it = monsterType.find(monster->getName());
 			if (it == monsterType.end()) {
 				MonsterInfo monsterInfo = {

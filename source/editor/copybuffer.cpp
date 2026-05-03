@@ -171,7 +171,7 @@ void CopyBuffer::cut(Editor &editor, int floor) {
 		const auto monsterSelection = newtile->popSelectedMonsters();
 		for (auto monsterIt = monsterSelection.begin(); monsterIt != monsterSelection.end(); ++monsterIt) {
 			++monsterCount;
-			copied_tile->monsters.emplace_back(*monsterIt);
+			copied_tile->addMonster(*monsterIt);
 		}
 
 		if (newtile->spawnMonster && newtile->spawnMonster->isSelected()) {

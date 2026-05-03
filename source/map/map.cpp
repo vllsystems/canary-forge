@@ -302,11 +302,16 @@ void Map::cleanDeletedZones(bool showdialog) {
 			continue;
 		}
 
-		for (auto iter = tile->zones.begin(); iter != tile->zones.end();) {
-			if (zones.hasZone(*iter)) {
-				++iter;
-			} else {
-				iter = tile->zones.erase(iter);
+		if (tile->zones) {
+			for (auto iter = tile->zones->begin(); iter != tile->zones->end();) {
+				if (zones.hasZone(*iter)) {
+					++iter;
+				} else {
+					iter = tile->zones->erase(iter);
+				}
+			}
+			if (tile->zones->empty()) {
+				tile->zones.reset();
 			}
 		}
 
@@ -331,7 +336,7 @@ Position Map::getZonePosition(unsigned int zoneId) {
 			continue;
 		}
 
-		if (tile->zones.find(zoneId) != tile->zones.end()) {
+		if (tile->hasZone(zoneId)) {
 			pos = tile->getPosition();
 			break;
 		}
@@ -872,12 +877,13 @@ int64_t RemoveMonstersOnMap(Map &map, bool selectedOnly) {
 			++it;
 			continue;
 		}
-		for (auto monster : tile->monsters) {
-			delete monster;
-			++removed;
+		if (tile->monsters) {
+			for (auto monster : *tile->monsters) {
+				delete monster;
+				++removed;
+			}
+			tile->monsters.reset();
 		}
-
-		tile->monsters.clear();
 
 		++it;
 	}
@@ -899,7 +905,7 @@ int64_t EditMonsterSpawnTime(Map &map, bool selectedOnly, int32_t spawnTime) {
 			continue;
 		}
 
-		for (auto monster : tile->monsters) {
+		for (auto monster : tile->getMonsters()) {
 			monster->setSpawnMonsterTime(spawnTime);
 			++updated;
 		}
@@ -925,7 +931,7 @@ std::pair<int64_t, std::unordered_map<std::string, int64_t>> CountMonstersOnMap(
 			continue;
 		}
 
-		for (const auto monster : tile->monsters) {
+		for (const auto monster : tile->getMonsters()) {
 			++total;
 			++monsterCount[monster->getName()];
 		}
