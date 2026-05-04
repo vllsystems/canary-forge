@@ -144,7 +144,12 @@ BitmapToMapWindow::BitmapToMapWindow(wxWindow* parent, Editor &editor) :
 	scaleOptions.Add("0.5x");
 	scaleOptions.Add("1x");
 	scaleOptions.Add("2x");
+	scaleOptions.Add("3x");
 	scaleOptions.Add("4x");
+	scaleOptions.Add("5x");
+	scaleOptions.Add("6x");
+	scaleOptions.Add("7x");
+	scaleOptions.Add("8x");
 	scaleChoice = newd wxChoice(this, wxID_ANY, wxDefaultPosition, wxSize(80, -1), scaleOptions);
 	scaleChoice->SetSelection(2); // default 1x
 	scaleSizer->Add(scaleChoice, 0, wxALL, 2);
@@ -448,32 +453,81 @@ void BitmapToMapWindow::OnColorListActivated(wxListEvent &event) {
 
 	auto &dc = detectedColors[dataIdx];
 
-	wxArrayString brushNames;
-	brushNames.Add("(ignore)");
-	brushNames.Add("(none)");
+	wxArrayString allBrushNames;
+	allBrushNames.Add("(ignore)");
+	allBrushNames.Add("(none)");
 
 	const BrushMap &brushMap = g_brushes.getMap();
 	for (auto it = brushMap.begin(); it != brushMap.end(); ++it) {
 		if (it->second->isGround()) {
-			brushNames.Add(wxString(it->second->getName()));
+			allBrushNames.Add(wxString(it->second->getName()));
 		}
 	}
 
-	wxSingleChoiceDialog chooser(this, "Select brush for color " + dc.toHex(), "Choose Brush", brushNames);
+	// Custom dialog with search box
+	wxDialog brushDialog(this, wxID_ANY, "Choose Brush for " + dc.toHex(), wxDefaultPosition, wxSize(320, 420));
+	wxBoxSizer* dlgSizer = newd wxBoxSizer(wxVERTICAL);
 
+	dlgSizer->Add(newd wxStaticText(&brushDialog, wxID_ANY, "Search:"), 0, wxLEFT | wxTOP, 8);
+	wxTextCtrl* searchCtrl = newd wxTextCtrl(&brushDialog, wxID_ANY, "", wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER);
+	dlgSizer->Add(searchCtrl, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 8);
+
+	wxListBox* brushList = newd wxListBox(&brushDialog, wxID_ANY, wxDefaultPosition, wxDefaultSize, allBrushNames, wxLB_SINGLE | wxLB_NEEDED_SB);
+	dlgSizer->Add(brushList, 1, wxEXPAND | wxLEFT | wxRIGHT, 8);
+
+	wxBoxSizer* btnSizer = newd wxBoxSizer(wxHORIZONTAL);
+	btnSizer->Add(newd wxButton(&brushDialog, wxID_OK, "OK"), 0, wxALL, 5);
+	btnSizer->Add(newd wxButton(&brushDialog, wxID_CANCEL, "Cancel"), 0, wxALL, 5);
+	dlgSizer->Add(btnSizer, 0, wxALIGN_CENTER | wxTOP, 4);
+
+	brushDialog.SetSizer(dlgSizer);
+
+	// Pre-select current brush
 	if (!dc.suggestedBrush.IsEmpty()) {
-		int found = brushNames.Index(dc.suggestedBrush);
+		int found = allBrushNames.Index(dc.suggestedBrush);
 		if (found != wxNOT_FOUND) {
-			chooser.SetSelection(found);
+			brushList->SetSelection(found);
+			brushList->EnsureVisible(found);
 		}
 	}
 
-	if (chooser.ShowModal() == wxID_OK) {
-		wxString chosen = chooser.GetStringSelection();
+	// Filter logic: rebuild list keeping only entries matching search text
+	auto filterList = [&](const wxString &query) {
+		wxString lq = query.Lower();
+		brushList->Clear();
+		for (const wxString &name : allBrushNames) {
+			if (lq.IsEmpty() || name.Lower().Find(lq) != wxNOT_FOUND) {
+				brushList->Append(name);
+			}
+		}
+		if (brushList->GetCount() > 0) {
+			brushList->SetSelection(0);
+		}
+	};
+
+	searchCtrl->Bind(wxEVT_TEXT, [&](wxCommandEvent &) {
+		filterList(searchCtrl->GetValue());
+	});
+
+	// Double-click or Enter confirms selection
+	brushList->Bind(wxEVT_LISTBOX_DCLICK, [&](wxCommandEvent &) {
+		brushDialog.EndModal(wxID_OK);
+	});
+	searchCtrl->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent &) {
+		if (brushList->GetSelection() != wxNOT_FOUND) {
+			brushDialog.EndModal(wxID_OK);
+		}
+	});
+
+	searchCtrl->SetFocus();
+
+	if (brushDialog.ShowModal() == wxID_OK) {
+		int sel = brushList->GetSelection();
+		wxString chosen = (sel != wxNOT_FOUND) ? brushList->GetString(sel) : wxString("");
 		if (chosen == "(ignore)") {
 			dc.ignore = true;
 			dc.suggestedBrush = "";
-		} else if (chosen == "(none)") {
+		} else if (chosen == "(none)" || chosen.IsEmpty()) {
 			dc.ignore = false;
 			dc.suggestedBrush = "";
 		} else {
@@ -590,7 +644,7 @@ void BitmapToMapWindow::OnClickGenerate(wxCommandEvent &event) {
 	// Apply scale
 	wxImage imageToConvert = loadedImage.Copy();
 	int scaleIndex = scaleChoice->GetSelection();
-	constexpr std::array<double, 5> scaleFactors = { 0.25, 0.5, 1.0, 2.0, 4.0 };
+	constexpr std::array<double, 10> scaleFactors = { 0.25, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0 };
 	if (scaleIndex >= 0 && scaleIndex < static_cast<int>(scaleFactors.size())) {
 		double factor = scaleFactors[scaleIndex];
 		if (factor != 1.0) {
