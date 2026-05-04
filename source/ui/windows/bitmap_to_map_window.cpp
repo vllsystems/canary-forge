@@ -500,15 +500,15 @@ void BitmapToMapWindow::OnColorListActivated(wxListEvent &event) {
 		}
 	};
 
-	searchCtrl->Bind(wxEVT_TEXT, [&](wxCommandEvent&) {
+	searchCtrl->Bind(wxEVT_TEXT, [&](wxCommandEvent &) {
 		filterList(searchCtrl->GetValue());
 	});
 
 	// Double-click or Enter confirms selection
-	brushList->Bind(wxEVT_LISTBOX_DCLICK, [&](wxCommandEvent&) {
+	brushList->Bind(wxEVT_LISTBOX_DCLICK, [&](wxCommandEvent &) {
 		brushDialog.EndModal(wxID_OK);
 	});
-	searchCtrl->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent&) {
+	searchCtrl->Bind(wxEVT_TEXT_ENTER, [&](wxCommandEvent &) {
 		if (brushList->GetSelection() != wxNOT_FOUND) {
 			brushDialog.EndModal(wxID_OK);
 		}
