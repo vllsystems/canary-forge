@@ -198,8 +198,7 @@ bool Map::convert(const ConversionMap &rm, bool showdialog) {
 			if (cfstm != rm.stm.end()) {
 				uint16_t aid = tile->ground->getActionID();
 				uint16_t uid = tile->ground->getUniqueID();
-				delete tile->ground;
-				tile->ground = nullptr;
+				tile->clearGround();
 
 				const std::vector<uint16_t> &v = cfstm->second;
 				// conversions << "Converted " << tile->getX() << ":" << tile->getY() << ":" << tile->getZ() << " " << id << " -> ";

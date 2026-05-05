@@ -85,6 +85,7 @@ protected:
 	wxCheckBox* hide_items_when_zoomed_chkbox;
 	wxColourPickerCtrl* cursor_color_pick;
 	wxCheckBox* show_performance_stats_chkbox;
+	wxCheckBox* ground_compression_enabled_chkbox;
 	wxColourPickerCtrl* cursor_alt_color_pick;
 	wxTextCtrl* palette_icons_col_size;
 	wxTextCtrl* palette_icons_row_size;

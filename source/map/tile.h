@@ -60,6 +60,7 @@ public: // Members
 	SpawnNpc* spawnNpc;
 	uint32_t house_id; // House id for this tile (pointer not safe)
 	std::unique_ptr<std::set<unsigned int>> zones;
+	bool usesSharedGround;
 
 public:
 	static void* operator new(std::size_t size);
@@ -312,6 +313,11 @@ public: // Functions
 	}
 
 	const std::set<unsigned int> &getZones() const;
+
+	// Ground deduplication
+	bool canUseSharedGround() const;
+	void optimizeGround();
+	void unshareGround();
 
 protected:
 	union {

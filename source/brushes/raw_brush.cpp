@@ -63,8 +63,7 @@ std::string RAWBrush::getName() const {
 
 void RAWBrush::undraw(BaseMap* map, Tile* tile) {
 	if (tile->ground && tile->ground->getID() == itemtype->id) {
-		delete tile->ground;
-		tile->ground = nullptr;
+		tile->clearGround();
 	}
 	for (ItemVector::iterator iter = tile->items.begin(); iter != tile->items.end();) {
 		Item* item = *iter;

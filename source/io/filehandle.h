@@ -20,6 +20,11 @@
 
 #include "app/definitions.h"
 #include <stack>
+#include <string>
+#include <cstdio>
+#include <cstdint>
+#include <vector>
+#include <cstring>
 
 #ifndef FORCEINLINE
 	#ifdef _MSV_VER

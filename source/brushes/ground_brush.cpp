@@ -525,8 +525,7 @@ bool GroundBrush::load(pugi::xml_node node, wxArrayString &warnings) {
 void GroundBrush::undraw(BaseMap* map, Tile* tile) {
 	ASSERT(tile);
 	if (tile->hasGround() && tile->ground->getGroundBrush() == this) {
-		delete tile->ground;
-		tile->ground = nullptr;
+		tile->clearGround();
 	}
 }
 

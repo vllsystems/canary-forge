@@ -302,12 +302,10 @@ void DoodadBrush::undraw(BaseMap* map, Tile* tile) {
 		if (g_settings.getInteger(Config::DOODAD_BRUSH_ERASE_LIKE)) {
 			// Only delete items of the same doodad brush
 			if (ownsItem(tile->ground)) {
-				delete tile->ground;
-				tile->ground = nullptr;
+				tile->clearGround();
 			}
 		} else {
-			delete tile->ground;
-			tile->ground = nullptr;
+			tile->clearGround();
 		}
 	}
 }

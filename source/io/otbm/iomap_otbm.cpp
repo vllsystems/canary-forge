@@ -34,6 +34,7 @@
 #include "game/npc.h"
 #include "map/map.h"
 #include "map/tile.h"
+#include "map/ground_pool.h"
 #include "game/item.h"
 #include "game/complexitem.h"
 #include "game/town.h"
@@ -541,6 +542,9 @@ bool IOMapOTBM::loadMap(Map &map, NodeFileReadHandle &f) {
 					if (house) {
 						house->addTile(tile);
 					}
+
+					// Optimize ground by using shared references when possible
+					tile->optimizeGround();
 
 					map.setTile(pos.x, pos.y, pos.z, tile);
 				} else {

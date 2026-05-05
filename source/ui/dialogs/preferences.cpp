@@ -260,6 +260,13 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 	sizer->Add(show_performance_stats_chkbox, 0, wxLEFT | wxTOP, 5);
 	SetWindowToolTip(show_performance_stats_chkbox, "Display real-time FPS, CPU and RAM usage on screen.");
 
+	ground_compression_enabled_chkbox = newd wxCheckBox(graphics_page, wxID_ANY, "Enable ground compression (deduplication)");
+	ground_compression_enabled_chkbox->SetValue(g_settings.getBoolean(Config::GROUND_COMPRESSION_ENABLED));
+	sizer->Add(ground_compression_enabled_chkbox, 0, wxLEFT | wxTOP, 5);
+	SetWindowToolTip(ground_compression_enabled_chkbox, "Share identical ground items across tiles to reduce memory usage (40-60% savings for simple tiles).");
+
+	sizer->AddSpacer(5);
+
 	icon_selection_shadow_chkbox = newd wxCheckBox(graphics_page, wxID_ANY, "Use icon selection shadow");
 	icon_selection_shadow_chkbox->SetValue(g_settings.getBoolean(Config::USE_GUI_SELECTION_SHADOW));
 	sizer->Add(icon_selection_shadow_chkbox, 0, wxLEFT | wxTOP, 5);
@@ -267,20 +274,26 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 
 	sizer->AddSpacer(5);
 
-	auto* subsizer = newd wxFlexGridSizer(2, 10, 10);
-	subsizer->AddGrowableCol(1);
+	auto* palette_subsizer = newd wxFlexGridSizer(2, 10, 10);
+	palette_subsizer->AddGrowableCol(1);
 
 	palette_icons_col_size = newd wxTextCtrl(graphics_page, wxID_ANY, wxString::Format("%d", g_settings.getInteger(Config::PALETTE_COL_COUNT)), wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_DIGITS));
 	palette_icons_col_size->SetMaxLength(2);
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Icons column size: "), 0);
-	subsizer->Add(palette_icons_col_size, 0);
+	palette_subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Icons column size: "), 0);
+	palette_subsizer->Add(palette_icons_col_size, 0);
 	SetWindowToolTip(palette_icons_col_size, tmp, "This will set the column size of the palette when using SMALL ICONS and LARGE ICONS will be the value divided by 2. The max columns are 99.");
 
 	palette_icons_row_size = newd wxTextCtrl(graphics_page, wxID_ANY, wxString::Format("%d", g_settings.getInteger(Config::PALETTE_ROW_COUNT)), wxDefaultPosition, wxDefaultSize, 0, wxTextValidator(wxFILTER_DIGITS));
 	palette_icons_row_size->SetMaxLength(2);
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Icons row size: "), 0);
-	subsizer->Add(palette_icons_row_size, 0);
+	palette_subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Icons row size: "), 0);
+	palette_subsizer->Add(palette_icons_row_size, 0);
 	SetWindowToolTip(palette_icons_row_size, tmp, "This will set the row size of the palette when using SMALL ICONS and LARGE ICONS will be the value divided by 2. The max rows are 99.");
+
+	sizer->Add(palette_subsizer, 0, wxLEFT | wxTOP, 5);
+	sizer->AddSpacer(5);
+
+	auto* graphics_subsizer = newd wxFlexGridSizer(2, 10, 10);
+	graphics_subsizer->AddGrowableCol(1);
 
 	// Icon background color
 	icon_background_choice = newd wxChoice(graphics_page, wxID_ANY);
@@ -295,24 +308,24 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 		icon_background_choice->SetSelection(0);
 	}
 
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Icon background color: "), 0);
-	subsizer->Add(icon_background_choice, 0);
+	graphics_subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Icon background color: "), 0);
+	graphics_subsizer->Add(icon_background_choice, 0);
 	SetWindowToolTip(icon_background_choice, tmp, "This will change the background color on icons in all windows.");
 
 	// Cursor colors
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Cursor color: "), 0);
-	subsizer->Add(cursor_color_pick = newd wxColourPickerCtrl(graphics_page, wxID_ANY, wxColor(g_settings.getInteger(Config::CURSOR_RED), g_settings.getInteger(Config::CURSOR_GREEN), g_settings.getInteger(Config::CURSOR_BLUE), g_settings.getInteger(Config::CURSOR_ALPHA))), 0);
+	graphics_subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Cursor color: "), 0);
+	graphics_subsizer->Add(cursor_color_pick = newd wxColourPickerCtrl(graphics_page, wxID_ANY, wxColor(g_settings.getInteger(Config::CURSOR_RED), g_settings.getInteger(Config::CURSOR_GREEN), g_settings.getInteger(Config::CURSOR_BLUE), g_settings.getInteger(Config::CURSOR_ALPHA))), 0);
 	SetWindowToolTip(icon_background_choice, tmp, "The color of the main cursor on the map (while in drawing mode).");
 
 	// Alternate cursor color
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Secondary cursor color: "), 0);
-	subsizer->Add(cursor_alt_color_pick = newd wxColourPickerCtrl(graphics_page, wxID_ANY, wxColor(g_settings.getInteger(Config::CURSOR_ALT_RED), g_settings.getInteger(Config::CURSOR_ALT_GREEN), g_settings.getInteger(Config::CURSOR_ALT_BLUE), g_settings.getInteger(Config::CURSOR_ALT_ALPHA))), 0);
+	graphics_subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Secondary cursor color: "), 0);
+	graphics_subsizer->Add(cursor_alt_color_pick = newd wxColourPickerCtrl(graphics_page, wxID_ANY, wxColor(g_settings.getInteger(Config::CURSOR_ALT_RED), g_settings.getInteger(Config::CURSOR_ALT_GREEN), g_settings.getInteger(Config::CURSOR_ALT_BLUE), g_settings.getInteger(Config::CURSOR_ALT_ALPHA))), 0);
 	SetWindowToolTip(icon_background_choice, tmp, "The color of the secondary cursor on the map (for houses and flags).");
 
 	// Screenshot dir
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Screenshot directory: "), 0);
+	graphics_subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Screenshot directory: "), 0);
 	screenshot_directory_picker = newd wxDirPickerCtrl(graphics_page, wxID_ANY);
-	subsizer->Add(screenshot_directory_picker, 1, wxEXPAND);
+	graphics_subsizer->Add(screenshot_directory_picker, 1, wxEXPAND);
 	wxString ss = wxstr(g_settings.getString(Config::SCREENSHOT_DIRECTORY));
 	screenshot_directory_picker->SetPath(ss);
 	SetWindowToolTip(screenshot_directory_picker, "Screenshot taken in the editor will be saved to this directory.");
@@ -334,11 +347,11 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 	} else {
 		screenshot_format_choice->SetSelection(0);
 	}
-	subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Screenshot format: "), 0);
-	subsizer->Add(screenshot_format_choice, 0);
+	graphics_subsizer->Add(tmp = newd wxStaticText(graphics_page, wxID_ANY, "Screenshot format: "), 0);
+	graphics_subsizer->Add(screenshot_format_choice, 0);
 	SetWindowToolTip(screenshot_format_choice, tmp, "This will affect the screenshot format used by the editor.\nTo take a screenshot, press F11.");
 
-	sizer->Add(subsizer, 1, wxEXPAND | wxALL, 5);
+	sizer->Add(graphics_subsizer, 0, wxLEFT | wxTOP, 5);
 
 	// Advanced g_settings
 	/*
@@ -698,6 +711,8 @@ void PreferencesWindow::Apply() {
 
 	g_settings.setInteger(Config::HIDE_ITEMS_WHEN_ZOOMED, hide_items_when_zoomed_chkbox->GetValue());
 	g_settings.setInteger(Config::SHOW_PERFORMANCE_STATS, show_performance_stats_chkbox->GetValue());
+	g_settings.setInteger(Config::GROUND_COMPRESSION_ENABLED, ground_compression_enabled_chkbox->GetValue());
+
 	/*
 	g_settings.setInteger(Config::TEXTURE_MANAGEMENT, texture_managment_chkbox->GetValue());
 	g_settings.setInteger(Config::TEXTURE_CLEAN_PULSE, clean_interval_spin->GetValue());

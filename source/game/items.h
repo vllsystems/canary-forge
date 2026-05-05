@@ -20,6 +20,13 @@
 
 #include "io/filehandle.h"
 #include "brushes/brush_enums.h"
+#include "app/main.h"
+#include "util/con_vector.h"
+#include <cstdint>
+#include <string>
+#include <vector>
+#include <memory>
+#include <map>
 
 namespace canary {
 	namespace protobuf {

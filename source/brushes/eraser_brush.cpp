@@ -58,12 +58,10 @@ void EraserBrush::undraw(BaseMap* map, Tile* tile) {
 	if (tile->ground) {
 		if (g_settings.getInteger(Config::ERASER_LEAVE_UNIQUE)) {
 			if (!tile->ground->isComplex()) {
-				delete tile->ground;
-				tile->ground = nullptr;
+				tile->clearGround();
 			}
 		} else {
-			delete tile->ground;
-			tile->ground = nullptr;
+			tile->clearGround();
 		}
 	}
 }

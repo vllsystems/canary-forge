@@ -362,8 +362,9 @@ void Settings::IO(IOMode mode) {
 	Int(FIND_ITEM_MODE, 0);
 	Int(FIND_TILE_TYPE, 0);
 	Int(JUMP_TO_ITEM_MODE, 0);
-
-#undef section
+	Int(GROUND_COMPRESSION_ENABLED, 1);
+	Int(SHOW_TOOLBAR_STANDARD, 1);
+	section("");
 #undef Int
 #undef IntToSave
 #undef Float

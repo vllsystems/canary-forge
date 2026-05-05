@@ -23,6 +23,7 @@
 #include "brushes/brush.h"
 
 #include "map/tile.h"
+#include "map/ground_pool.h"
 #include "game/monster.h"
 #include "game/house.h"
 #include "map/basemap.h"
@@ -85,6 +86,7 @@ Tile::Tile(int x, int y, int z) :
 	npc(nullptr),
 	spawnNpc(nullptr),
 	house_id(0),
+	usesSharedGround(false),
 	mapflags(0),
 	statflags(0),
 	minimapColor(INVALID_MINIMAP_COLOR) {
@@ -98,6 +100,7 @@ Tile::Tile(TileLocation &loc) :
 	npc(nullptr),
 	spawnNpc(nullptr),
 	house_id(0),
+	usesSharedGround(false),
 	mapflags(0),
 	statflags(0),
 	minimapColor(INVALID_MINIMAP_COLOR) {
@@ -115,7 +118,10 @@ Tile::~Tile() {
 		monsters->pop_back();
 	}
 	// printf("%d,%d,%d,%p\n", tilePos.x, tilePos.y, tilePos.z, ground);
-	delete ground;
+	// Only delete ground if it's not shared
+	if (ground && !usesSharedGround) {
+		delete ground;
+	}
 	delete spawnMonster;
 	delete npc;
 	delete spawnNpc;
@@ -136,7 +142,9 @@ Tile* Tile::deepCopy(BaseMap &map) const {
 	}
 	// Spawncount & exits are not transferred on copy!
 	if (ground) {
+		// Always create a deep copy, even if ground is shared
 		copy->ground = ground->deepCopy();
+		copy->usesSharedGround = false;
 	}
 
 	for (const auto monster : getMonsters()) {
@@ -340,7 +348,10 @@ void Tile::addItem(Item* item) {
 		return;
 	}
 	if (item->isGroundTile()) {
-		// printf("ADDING GROUND\n");
+		// If had shared ground, unshare it first
+		if (usesSharedGround) {
+			unshareGround();
+		}
 		delete ground;
 		ground = item;
 		return;
@@ -350,6 +361,10 @@ void Tile::addItem(Item* item) {
 
 	uint16_t gid = item->getGroundEquivalent();
 	if (gid != 0) {
+		// If had shared ground, unshare it first
+		if (usesSharedGround) {
+			unshareGround();
+		}
 		delete ground;
 		ground = Item::Create(gid);
 		// At the very bottom!
@@ -393,13 +408,19 @@ bool Tile::removeItem(const Item* item) {
 }
 
 void Tile::clearGround() {
-	delete ground;
+	if (ground && !usesSharedGround) {
+		delete ground;
+	}
 	ground = nullptr;
+	usesSharedGround = false;
 }
 
 void Tile::replaceGround(Item* newGround) {
-	delete ground;
+	if (ground && !usesSharedGround) {
+		delete ground;
+	}
 	ground = newGround;
+	usesSharedGround = false;
 }
 
 void Tile::clearMonsters() {
@@ -765,4 +786,39 @@ bool Tile::hasHouseExit(uint32_t houseId) const {
 
 	auto it = std::find(exits->begin(), exits->end(), houseId);
 	return it != exits->end();
+}
+
+bool Tile::canUseSharedGround() const {
+	return hasGround() &&
+	       items.empty() &&
+	       !spawnMonster &&
+	       !spawnNpc &&
+	       house_id == 0 &&
+	       !hasUniqueItem() &&
+	       ground->getActionID() == 0 &&
+	       ground->getUniqueID() == 0 &&
+	       !isSelected();
+}
+
+void Tile::optimizeGround() {
+	if (!canUseSharedGround()) {
+		return;
+	}
+
+	Item* sharedGround = GroundPool::getSharedGround(ground->getID());
+	if (sharedGround) {
+		// Delete the original ground if it's not already shared
+		if (ground && !usesSharedGround) {
+			delete ground;
+		}
+		ground = sharedGround;
+		usesSharedGround = true;
+	}
+}
+
+void Tile::unshareGround() {
+	if (usesSharedGround && ground) {
+		ground = ground->deepCopy();
+		usesSharedGround = false;
+	}
 }

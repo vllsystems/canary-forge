@@ -300,8 +300,7 @@ inline int64_t RemoveItemOnMap(Map &map, RemoveIfType &condition, bool selectedO
 
 		if (tile->ground) {
 			if (condition(map, tile->ground, removed, done)) {
-				delete tile->ground;
-				tile->ground = nullptr;
+				tile->clearGround();
 				++removed;
 			}
 		}
@@ -344,8 +343,7 @@ inline int64_t RemoveItemDuplicateOnMap(Map &map, RemoveIfType &condition, bool 
 
 		if (tile->ground) {
 			if (condition(map, tile, tile->ground, removed, done)) {
-				delete tile->ground;
-				tile->ground = nullptr;
+				tile->clearGround();
 				++removed;
 			}
 		}
