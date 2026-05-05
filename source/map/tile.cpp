@@ -789,15 +789,7 @@ bool Tile::hasHouseExit(uint32_t houseId) const {
 }
 
 bool Tile::canUseSharedGround() const {
-	return hasGround() &&
-	       items.empty() &&
-	       !spawnMonster &&
-	       !spawnNpc &&
-	       house_id == 0 &&
-	       !hasUniqueItem() &&
-	       ground->getActionID() == 0 &&
-	       ground->getUniqueID() == 0 &&
-	       !isSelected();
+	return hasGround() && items.empty() && !spawnMonster && !spawnNpc && house_id == 0 && !hasUniqueItem() && ground->getActionID() == 0 && ground->getUniqueID() == 0 && !isSelected();
 }
 
 void Tile::optimizeGround() {
