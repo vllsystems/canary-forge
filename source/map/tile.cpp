@@ -24,6 +24,7 @@
 
 #include "map/tile.h"
 #include "map/ground_pool.h"
+#include "map/item_pool.h"
 #include "game/monster.h"
 #include "game/house.h"
 #include "map/basemap.h"
@@ -108,10 +109,14 @@ Tile::Tile(TileLocation &loc) :
 }
 
 Tile::~Tile() {
-	while (!items.empty()) {
-		delete items.back();
-		items.pop_back();
+	// Delete only non-shared items
+	for (size_t i = 0; i < items.size(); ++i) {
+		if (i >= sharedItemFlags.size() || !sharedItemFlags[i]) {
+			delete items[i];
+		}
 	}
+	items.clear();
+	sharedItemFlags.clear();
 
 	while (monsters && !monsters->empty()) {
 		delete monsters->back();
@@ -358,6 +363,18 @@ void Tile::addItem(Item* item) {
 	}
 
 	ItemVector::iterator it;
+	bool isShared = false;
+
+	// Try to use shared item if eligible
+	if (ItemPool::isEnabled() && canDeduplicateItem(item)) {
+		Item* sharedItem = ItemPool::getSharedItem(*item);
+		if (sharedItem && sharedItem != item) {
+			// Use the shared item instead
+			delete item;
+			item = sharedItem;
+			isShared = true;
+		}
+	}
 
 	uint16_t gid = item->getGroundEquivalent();
 	if (gid != 0) {
@@ -389,7 +406,25 @@ void Tile::addItem(Item* item) {
 		}
 	}
 
+	// Insert item and track if it's shared
+	size_t insertPos = it - items.begin();
 	items.insert(it, item);
+	
+	// Update shared item flags
+	sharedItemFlags.resize(items.size(), false);
+	if (isShared) {
+		// Move flags to accommodate the new item
+		for (size_t i = items.size() - 1; i > insertPos; --i) {
+			sharedItemFlags[i] = sharedItemFlags[i - 1];
+		}
+		sharedItemFlags[insertPos] = true;
+	} else {
+		// Move flags to accommodate the new item
+		for (size_t i = items.size() - 1; i > insertPos; --i) {
+			sharedItemFlags[i] = sharedItemFlags[i - 1];
+		}
+		sharedItemFlags[insertPos] = false;
+	}
 
 	if (item->isSelected()) {
 		statflags |= TILESTATE_SELECTED;
@@ -399,8 +434,16 @@ void Tile::addItem(Item* item) {
 bool Tile::removeItem(const Item* item) {
 	for (auto it = items.begin(); it != items.end(); ++it) {
 		if (*it == item) {
-			delete *it;
+			size_t index = it - items.begin();
+			// Only delete if not shared
+			if (index >= sharedItemFlags.size() || !sharedItemFlags[index]) {
+				delete *it;
+			}
 			items.erase(it);
+			// Remove the shared flag for this index
+			if (index < sharedItemFlags.size()) {
+				sharedItemFlags.erase(sharedItemFlags.begin() + index);
+			}
 			return true;
 		}
 	}
@@ -557,15 +600,26 @@ ItemVector Tile::popSelectedItems(bool ignoreTileSelected) {
 		ground = nullptr;
 	}
 
+	std::vector<bool> newSharedFlags;
+	newSharedFlags.reserve(sharedItemFlags.size());
+	
 	for (auto it = items.begin(); it != items.end();) {
+		size_t index = it - items.begin();
 		Item* item = (*it);
 		if (item->isSelected()) {
 			pop_items.push_back(item);
 			it = items.erase(it);
+			// Don't add flag for removed item
 		} else {
+			// Keep the flag for remaining items
+			if (index < sharedItemFlags.size()) {
+				newSharedFlags.push_back(sharedItemFlags[index]);
+			}
 			++it;
 		}
 	}
+	
+	sharedItemFlags = std::move(newSharedFlags);
 
 	statflags &= ~TILESTATE_SELECTED;
 	return pop_items;
@@ -813,4 +867,42 @@ void Tile::unshareGround() {
 		ground = ground->deepCopy();
 		usesSharedGround = false;
 	}
+}
+
+void Tile::optimizeItems() {
+	if (!ItemPool::isEnabled()) {
+		return;
+	}
+
+	sharedItemFlags.resize(items.size(), false);
+
+	for (size_t i = 0; i < items.size(); ++i) {
+		// Skip if already shared
+		if (sharedItemFlags[i]) {
+			continue;
+		}
+
+		Item* item = items[i];
+		if (!item) {
+			continue;
+		}
+
+		// Try to get a shared version of this item
+		Item* sharedItem = ItemPool::getSharedItem(*item);
+		if (sharedItem && sharedItem != item) {
+			// Replace the unique item with the shared one
+			delete item;
+			items[i] = sharedItem;
+			sharedItemFlags[i] = true;
+		}
+	}
+}
+
+bool Tile::isItemShared(const Item* item) const {
+	for (size_t i = 0; i < items.size(); ++i) {
+		if (items[i] == item) {
+			return i < sharedItemFlags.size() && sharedItemFlags[i];
+		}
+	}
+	return false;
 }

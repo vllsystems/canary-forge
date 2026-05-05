@@ -363,6 +363,7 @@ void Settings::IO(IOMode mode) {
 	Int(FIND_TILE_TYPE, 0);
 	Int(JUMP_TO_ITEM_MODE, 0);
 	Int(GROUND_COMPRESSION_ENABLED, 1);
+	Int(ITEM_DEDUPLICATION_ENABLED, 0);
 	Int(SHOW_TOOLBAR_STANDARD, 1);
 	section("");
 #undef Int

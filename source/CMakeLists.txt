@@ -137,6 +137,7 @@ target_sources(${PROJECT_NAME}
 	app/artprovider.cpp
 	map/basemap.cpp
 	map/ground_pool.cpp
+	map/item_pool.cpp
 	ui/windows/bitmap_to_map_window.cpp
 	io/bitmap_to_map/bitmap_to_map_converter.cpp
 	brushes/brush.cpp

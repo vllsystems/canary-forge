@@ -35,6 +35,7 @@
 #include "map/map.h"
 #include "map/tile.h"
 #include "map/ground_pool.h"
+#include "map/item_pool.h"
 #include "game/item.h"
 #include "game/complexitem.h"
 #include "game/town.h"
@@ -490,6 +491,8 @@ bool IOMapOTBM::loadMap(Map &map, NodeFileReadHandle &f) {
 								Item* item = Item::Create_OTBM(*this, tileNode);
 								if (item == nullptr) {
 									warning("Invalid item at tile %d:%d:%d", pos.x, pos.y, pos.z);
+								} else {
+									ItemPool::reportOccurrence(item->getID());
 								}
 								tile->addItem(item);
 								break;
@@ -513,6 +516,7 @@ bool IOMapOTBM::loadMap(Map &map, NodeFileReadHandle &f) {
 						if (node_type == OTBM_ITEM) {
 							item = Item::Create_OTBM(*this, childNode);
 							if (item) {
+								ItemPool::reportOccurrence(item->getID());
 								if (!item->unserializeItemNode_OTBM(*this, childNode)) {
 									warning("Couldn't unserialize item attributes at %d:%d:%d", pos.x, pos.y, pos.z);
 								}

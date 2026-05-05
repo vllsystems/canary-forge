@@ -265,6 +265,11 @@ wxNotebookPage* PreferencesWindow::CreateGraphicsPage() {
 	sizer->Add(ground_compression_enabled_chkbox, 0, wxLEFT | wxTOP, 5);
 	SetWindowToolTip(ground_compression_enabled_chkbox, "Share identical ground items across tiles to reduce memory usage (40-60% savings for simple tiles).");
 
+	item_deduplication_enabled_chkbox = newd wxCheckBox(graphics_page, wxID_ANY, "Enable item deduplication");
+	item_deduplication_enabled_chkbox->SetValue(g_settings.getBoolean(Config::ITEM_DEDUPLICATION_ENABLED));
+	sizer->Add(item_deduplication_enabled_chkbox, 0, wxLEFT | wxTOP, 5);
+	SetWindowToolTip(item_deduplication_enabled_chkbox, "Share identical non-unique items across tiles to reduce memory usage (20-40% additional savings).");
+
 	sizer->AddSpacer(5);
 
 	icon_selection_shadow_chkbox = newd wxCheckBox(graphics_page, wxID_ANY, "Use icon selection shadow");
@@ -712,6 +717,7 @@ void PreferencesWindow::Apply() {
 	g_settings.setInteger(Config::HIDE_ITEMS_WHEN_ZOOMED, hide_items_when_zoomed_chkbox->GetValue());
 	g_settings.setInteger(Config::SHOW_PERFORMANCE_STATS, show_performance_stats_chkbox->GetValue());
 	g_settings.setInteger(Config::GROUND_COMPRESSION_ENABLED, ground_compression_enabled_chkbox->GetValue());
+	g_settings.setInteger(Config::ITEM_DEDUPLICATION_ENABLED, item_deduplication_enabled_chkbox->GetValue());
 
 	/*
 	g_settings.setInteger(Config::TEXTURE_MANAGEMENT, texture_managment_chkbox->GetValue());

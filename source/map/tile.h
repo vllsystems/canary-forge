@@ -61,6 +61,7 @@ public: // Members
 	uint32_t house_id; // House id for this tile (pointer not safe)
 	std::unique_ptr<std::set<unsigned int>> zones;
 	bool usesSharedGround;
+	std::vector<bool> sharedItemFlags; // Tracks which items are shared
 
 public:
 	static void* operator new(std::size_t size);
@@ -318,6 +319,10 @@ public: // Functions
 	bool canUseSharedGround() const;
 	void optimizeGround();
 	void unshareGround();
+
+	// Item deduplication
+	void optimizeItems();
+	bool isItemShared(const Item* item) const;
 
 protected:
 	union {
