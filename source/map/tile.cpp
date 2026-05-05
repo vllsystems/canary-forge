@@ -409,7 +409,7 @@ void Tile::addItem(Item* item) {
 	// Insert item and track if it's shared
 	size_t insertPos = it - items.begin();
 	items.insert(it, item);
-	
+
 	// Update shared item flags
 	sharedItemFlags.resize(items.size(), false);
 	if (isShared) {
@@ -602,7 +602,7 @@ ItemVector Tile::popSelectedItems(bool ignoreTileSelected) {
 
 	std::vector<bool> newSharedFlags;
 	newSharedFlags.reserve(sharedItemFlags.size());
-	
+
 	for (auto it = items.begin(); it != items.end();) {
 		size_t index = it - items.begin();
 		Item* item = (*it);
@@ -618,7 +618,7 @@ ItemVector Tile::popSelectedItems(bool ignoreTileSelected) {
 			++it;
 		}
 	}
-	
+
 	sharedItemFlags = std::move(newSharedFlags);
 
 	statflags &= ~TILESTATE_SELECTED;

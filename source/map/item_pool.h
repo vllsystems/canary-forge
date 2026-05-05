@@ -32,12 +32,12 @@ class Depot;
 
 // Simple item key for indexing (item ID + subtype)
 struct ItemKey {
-    uint16_t id;
-    uint16_t subtype;
-    
-    bool operator==(const ItemKey& other) const {
-        return id == other.id && subtype == other.subtype;
-    }
+	uint16_t id;
+	uint16_t subtype;
+
+	bool operator==(const ItemKey &other) const {
+		return id == other.id && subtype == other.subtype;
+	}
 };
 
 // Check if an item can be deduplicated (shared)
@@ -48,36 +48,36 @@ bool canDeduplicateItem(Item* item);
 // Only deduplicates very common simple items (ID < 500, subtype == 1)
 class ItemPool {
 private:
-    // Fixed-size vector for common items (IDs 0-499)
-    // Each entry holds a shared_ptr to the deduplicated item
-    static std::vector<std::shared_ptr<Item>> commonPool;
-    static std::mutex poolMutex;
-    static std::atomic<size_t> memorySaved;
-    static std::atomic<size_t> sharedCount;
-    static std::atomic<size_t> totalRequests;
-    
-    // Threshold: minimum number of times an item type must be seen
-    // before we start deduplicating it
-    static constexpr size_t MIN_OCCURRENCES_THRESHOLD = 50;
-    static std::vector<size_t> occurrenceCounts;
-    static std::mutex countsMutex;
+	// Fixed-size vector for common items (IDs 0-499)
+	// Each entry holds a shared_ptr to the deduplicated item
+	static std::vector<std::shared_ptr<Item>> commonPool;
+	static std::mutex poolMutex;
+	static std::atomic<size_t> memorySaved;
+	static std::atomic<size_t> sharedCount;
+	static std::atomic<size_t> totalRequests;
+
+	// Threshold: minimum number of times an item type must be seen
+	// before we start deduplicating it
+	static constexpr size_t MIN_OCCURRENCES_THRESHOLD = 50;
+	static std::vector<size_t> occurrenceCounts;
+	static std::mutex countsMutex;
 
 public:
-    // Try to get a shared item. Returns nullptr if item shouldn't be deduplicated.
-    static Item* getSharedItem(const Item& item);
-    
-    // Get statistics
-    static size_t getMemorySaved();
-    static size_t getSharedCount();
-    static size_t getTotalRequests();
-    static double getHitRate();
-    
-    // Reset pool
-    static void clear();
-    static bool isEnabled();
-    
-    // Report an item occurrence (call during map loading)
-    static void reportOccurrence(uint16_t itemId);
+	// Try to get a shared item. Returns nullptr if item shouldn't be deduplicated.
+	static Item* getSharedItem(const Item &item);
+
+	// Get statistics
+	static size_t getMemorySaved();
+	static size_t getSharedCount();
+	static size_t getTotalRequests();
+	static double getHitRate();
+
+	// Reset pool
+	static void clear();
+	static bool isEnabled();
+
+	// Report an item occurrence (call during map loading)
+	static void reportOccurrence(uint16_t itemId);
 };
 
 #endif
